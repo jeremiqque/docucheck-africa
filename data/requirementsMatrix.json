@@ -1,0 +1,311 @@
+{
+  "nigeria": {
+    "pre_construction": [
+      {
+        "document_type": "building_permit",
+        "label": "Building Permit",
+        "issuing_authorities": [
+          "State Ministry of Physical Planning",
+          "Lagos State Physical Planning Authority",
+          "LASPPPA",
+          "Abuja Municipal Area Council",
+          "Local Government Authority"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "coren_certificate",
+        "label": "COREN Registration Certificate",
+        "issuing_authorities": [
+          "COREN",
+          "Council for the Regulation of Engineering in Nigeria"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "eia_approval",
+        "label": "Environmental Impact Assessment",
+        "issuing_authorities": [
+          "NESREA",
+          "National Environmental Standards and Regulations Enforcement Agency",
+          "Federal Ministry of Environment"
+        ],
+        "validity_months": 24,
+        "mandatory": true
+      },
+      {
+        "document_type": "insurance_certificate",
+        "label": "Insurance Certificate",
+        "issuing_authorities": [
+          "NAICOM",
+          "Registered Insurance Company",
+          "National Insurance Commission"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "safety_certificate",
+        "label": "Safety Certificate",
+        "issuing_authorities": [
+          "Nigeria Social Insurance Trust Fund",
+          "NSITF",
+          "Ministry of Labour and Employment"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      }
+    ],
+    "post_construction": [
+      {
+        "document_type": "completion_certificate",
+        "label": "Completion Certificate",
+        "issuing_authorities": [
+          "Supervising Engineer",
+          "COREN",
+          "Project Architect"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "occupancy_approval",
+        "label": "Certificate of Occupancy",
+        "issuing_authorities": [
+          "State Ministry of Physical Planning",
+          "Lagos State Physical Planning Authority",
+          "Abuja Municipal Area Council"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "final_inspection_report",
+        "label": "Final Inspection Report",
+        "issuing_authorities": [
+          "Building Control Authority",
+          "State Ministry of Physical Planning"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "structural_completion_certificate",
+        "label": "Structural Completion Certificate",
+        "issuing_authorities": [
+          "COREN",
+          "Registered Structural Engineer"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "fire_safety_certificate",
+        "label": "Fire Safety Certificate",
+        "issuing_authorities": [
+          "Nigeria Fire Service",
+          "State Fire Service"
+        ],
+        "mandatory": true
+      }
+    ]
+  },
+  "ghana": {
+    "pre_construction": [
+      {
+        "document_type": "building_permit",
+        "label": "Building Permit",
+        "issuing_authorities": [
+          "LUSPA",
+          "Land Use and Spatial Planning Authority",
+          "District Assembly"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "eia_approval",
+        "label": "Environmental Impact Assessment",
+        "issuing_authorities": [
+          "EPA Ghana",
+          "Environmental Protection Agency",
+          "Environmental Protection Agency Ghana"
+        ],
+        "validity_months": 24,
+        "mandatory": true
+      },
+      {
+        "document_type": "contractor_licence",
+        "label": "Contractor Licence",
+        "issuing_authorities": [
+          "Ghana Institution of Engineering",
+          "GhIE",
+          "Public Procurement Authority"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "insurance_certificate",
+        "label": "Insurance Certificate",
+        "issuing_authorities": [
+          "National Insurance Commission Ghana",
+          "Registered Insurance Company"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "safety_certificate",
+        "label": "Safety Certificate",
+        "issuing_authorities": [
+          "Ghana Health Service",
+          "Department of Factories Inspectorate"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      }
+    ],
+    "post_construction": [
+      {
+        "document_type": "completion_certificate",
+        "label": "Completion Certificate",
+        "issuing_authorities": [
+          "Ghana Institution of Engineering",
+          "Supervising Engineer"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "occupancy_approval",
+        "label": "Occupancy Certificate",
+        "issuing_authorities": [
+          "LUSPA",
+          "District Assembly"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "final_inspection_report",
+        "label": "Final Inspection Report",
+        "issuing_authorities": [
+          "LUSPA",
+          "Ghana Building Inspectorate"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "fire_safety_certificate",
+        "label": "Fire Safety Certificate",
+        "issuing_authorities": [
+          "Ghana National Fire Service"
+        ],
+        "mandatory": true
+      }
+    ]
+  },
+  "south_africa": {
+    "pre_construction": [
+      {
+        "document_type": "building_permit",
+        "label": "Building Plan Approval",
+        "issuing_authorities": [
+          "Local Municipality",
+          "City of Cape Town",
+          "City of Johannesburg",
+          "eThekwini Municipality"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "nhbrc_enrolment",
+        "label": "NHBRC Enrolment Certificate",
+        "issuing_authorities": [
+          "NHBRC",
+          "National Home Builders Registration Council"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "eia_approval",
+        "label": "Environmental Authorisation",
+        "issuing_authorities": [
+          "DFFE",
+          "Department of Forestry Fisheries and Environment",
+          "Provincial Department of Environment"
+        ],
+        "validity_months": 24,
+        "mandatory": true
+      },
+      {
+        "document_type": "insurance_certificate",
+        "label": "Insurance Certificate",
+        "issuing_authorities": [
+          "Registered Insurance Company",
+          "FSCA",
+          "Financial Sector Conduct Authority"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      },
+      {
+        "document_type": "safety_certificate",
+        "label": "Health and Safety Plan",
+        "issuing_authorities": [
+          "Department of Employment and Labour",
+          "Construction Health and Safety Officer"
+        ],
+        "validity_months": 12,
+        "mandatory": true
+      }
+    ],
+    "post_construction": [
+      {
+        "document_type": "completion_certificate",
+        "label": "Completion Certificate",
+        "issuing_authorities": [
+          "Local Municipality",
+          "Principal Agent"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "occupancy_approval",
+        "label": "Occupancy Certificate",
+        "issuing_authorities": [
+          "Local Municipality",
+          "City of Cape Town",
+          "City of Johannesburg"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "nhbrc_completion_certificate",
+        "label": "NHBRC Completion Certificate",
+        "issuing_authorities": [
+          "NHBRC",
+          "National Home Builders Registration Council"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "final_inspection_report",
+        "label": "Final Inspection Report",
+        "issuing_authorities": [
+          "Local Municipality",
+          "Building Inspector"
+        ],
+        "mandatory": true
+      },
+      {
+        "document_type": "fire_safety_certificate",
+        "label": "Fire Safety Certificate",
+        "issuing_authorities": [
+          "South African Fire Service",
+          "Local Municipality Fire Department"
+        ],
+        "mandatory": true
+      }
+    ]
+  }
+}
