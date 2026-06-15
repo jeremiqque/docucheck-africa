@@ -101,7 +101,7 @@ export default function NewProjectPage() {
             rows={3}
             value={form.description}
             onChange={update("description")}
-            placeholder="Optional — a short note about this project"
+            placeholder="Optional: a short note about this project"
             className={`${fieldClass} resize-y`}
           />
         </Field>

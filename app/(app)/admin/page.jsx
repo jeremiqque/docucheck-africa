@@ -125,7 +125,7 @@ export default function AdminPage() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-ink">{u.full_name || "Unnamed user"}</p>
-                <p className="truncate text-xs text-slate">{u.organisation || "—"}</p>
+                <p className="truncate text-xs text-slate">{u.organisation || "-"}</p>
               </div>
               <span
                 className={`rounded-pill px-2.5 py-1 text-xs font-medium ${
@@ -153,7 +153,7 @@ export default function AdminPage() {
   );
 }
 
-/* Stat card — matches the dashboard */
+/* Stat card - matches the dashboard */
 const ACCENT = { gold: "bg-gold", pass: "bg-pass", warn: "bg-warn", fail: "bg-fail" };
 
 function StatCard({ accent, label, value, sub, loading }) {
@@ -161,7 +161,7 @@ function StatCard({ accent, label, value, sub, loading }) {
     <div className="relative overflow-hidden rounded-md border border-cloud bg-paper p-5">
       <span className={`absolute inset-x-0 top-0 h-[3px] ${ACCENT[accent] ?? "bg-gold"}`} />
       <p className="micro-label">{label}</p>
-      <p className="mt-2 font-display text-[28px] font-bold leading-none text-ink">{loading ? "—" : value}</p>
+      <p className="mt-2 font-display text-[28px] font-bold leading-none text-ink">{loading ? "-" : value}</p>
       <p className="mt-2 text-xs text-slate">{sub}</p>
     </div>
   );

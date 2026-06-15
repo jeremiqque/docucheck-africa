@@ -108,7 +108,7 @@ export async function POST(request) {
     // Write to audit log
     await supabase.from("audit_logs").insert({
       project_id: project.id,
-      action: `Project created — ${name} (${jurisdiction})`,
+      action: `Project created: ${name} (${jurisdiction})`,
       details: { jurisdiction, project_type },
     });
 

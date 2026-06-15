@@ -211,14 +211,14 @@ export default function ProjectDetailPage() {
       <div className="mt-5">
         {tab === "pre" && (
           <ChecklistGroup
-            title={`Pre-Construction Checklist — ${jurisdictionLabel}`}
+            title={`Pre-Construction Checklist (${jurisdictionLabel})`}
             items={preItems}
             docsById={docsById}
           />
         )}
         {tab === "post" && (
           <ChecklistGroup
-            title={`Post-Construction Checklist — ${jurisdictionLabel}`}
+            title={`Post-Construction Checklist (${jurisdictionLabel})`}
             items={postItems}
             docsById={docsById}
           />

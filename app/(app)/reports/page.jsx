@@ -99,7 +99,7 @@ export default function ReportsPage() {
         </div>
         <EmptyState
           title="No projects to report on"
-          body="Create a project and verify its documents — then generate compliance reports and AI narratives here."
+          body="Create a project and verify its documents, then generate compliance reports and AI narratives here."
           ctaHref="/projects/new"
           ctaLabel="Create a project"
         />

@@ -188,7 +188,7 @@ export default function DashboardPage() {
                 <ActivityItem
                   key={d.id}
                   verdict={d.verdict}
-                  title={`${titleCase(d.document_type || "Document")} — ${(d.verdict || "pending").toUpperCase()}`}
+                  title={`${titleCase(d.document_type || "Document")} · ${(d.verdict || "pending").toUpperCase()}`}
                   sub={projectName(d.project_id)}
                   time={relativeTime(d.uploaded_at)}
                 />
@@ -210,7 +210,7 @@ function StatCard({ accent, label, value, sub, loading }) {
     <div className="relative overflow-hidden rounded-md border border-cloud bg-paper p-5">
       <span className={`absolute inset-x-0 top-0 h-[3px] ${ACCENT[accent] ?? "bg-gold"}`} />
       <p className="micro-label">{label}</p>
-      <p className="mt-2 font-display text-[28px] font-bold leading-none text-ink">{loading ? "—" : value}</p>
+      <p className="mt-2 font-display text-[28px] font-bold leading-none text-ink">{loading ? "-" : value}</p>
       <p className="mt-2 text-xs text-slate">{sub}</p>
     </div>
   );

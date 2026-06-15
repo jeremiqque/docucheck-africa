@@ -140,7 +140,7 @@ export async function POST(request) {
     await supabase.from("audit_logs").insert({
       project_id: projectId,
       document_id: document.id,
-      action: `Document processed — ${classification.document_type} — ${complianceResult.verdict.toUpperCase()}`,
+      action: `Document processed: ${classification.document_type} (${complianceResult.verdict.toUpperCase()})`,
       details: {
         verdict: complianceResult.verdict,
         checks: complianceResult.checks,

@@ -1,5 +1,5 @@
 /**
- * DocuCheck Africa — icon set
+ * DocuCheck Africa icon set
  * ---------------------------------------------------------------------------
  * Thin wrappers around the real Hugeicons (@hugeicons/react +
  * @hugeicons/core-free-icons), exported under the names used in

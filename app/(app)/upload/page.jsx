@@ -37,7 +37,7 @@ const VERDICT = {
 const CHECK_COLOR = { pass: "text-pass", warning: "text-warn", fail: "text-fail" };
 
 function fmtField(v) {
-  return v === null || v === undefined || v === "" ? "—" : String(v);
+  return v === null || v === undefined || v === "" ? "-" : String(v);
 }
 
 export default function UploadPage() {
@@ -248,7 +248,7 @@ export default function UploadPage() {
               <div className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-graphite">Jurisdiction</span>
                 <p className="rounded-sm border border-cloud bg-mist px-3 py-2.5 text-sm capitalize text-slate">
-                  {selectedProject ? selectedProject.jurisdiction.replace(/_/g, " ") : "—"}
+                  {selectedProject ? selectedProject.jurisdiction.replace(/_/g, " ") : "-"}
                   <span className="ml-1 text-xs">(from project)</span>
                 </p>
               </div>
@@ -257,8 +257,8 @@ export default function UploadPage() {
             <div className="rounded-md border border-cloud bg-mist p-4">
               <p className="text-[13px] font-medium text-ink">How it works</p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate">
-                Your document is processed through a 9-step AI pipeline — AWS Textract for OCR and
-                GPT for classification and field extraction — then checked against the compliance
+                Your document is processed through a 9-step AI pipeline (AWS Textract for OCR and
+                GPT for classification and field extraction), then checked against the compliance
                 rules for the project&apos;s jurisdiction. Results appear in under 30 seconds.
               </p>
             </div>
@@ -402,7 +402,7 @@ function ResultCard({ result, projectId, onReset }) {
           {FIELD_ROWS.map(([label, value]) => (
             <div key={label} className="rounded-sm bg-mist p-3">
               <p className="micro-label">{label}</p>
-              <p className="mt-1 text-sm font-medium text-ink">{value || "—"}</p>
+              <p className="mt-1 text-sm font-medium text-ink">{value || "-"}</p>
             </div>
           ))}
         </div>

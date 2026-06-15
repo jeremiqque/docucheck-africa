@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-  DocuCheck Africa — design tokens
+  DocuCheck Africa design tokens
   Source of truth: DESIGN_SYSTEM.md
   Light theme only. Edges are defined by hairline borders, not shadows.
 */
@@ -12,7 +12,7 @@
   --color-ink: #1a1a1a; /* nav, headers, primary buttons, logo mark, body text */
   --color-graphite: #3f3f3f; /* secondary text, muted labels */
   --color-slate: #6b7280; /* tertiary text, captions, placeholders */
-  --color-gold: #e8a020; /* single chromatic accent — logo mark, key CTA */
+  --color-gold: #e8a020; /* single chromatic accent - logo mark, key CTA */
   --color-gold-deep: #c7861a; /* gold hover / pressed */
 
   /* ── Surfaces (layer order: paper → mist → cloud → fog) ── */
@@ -20,7 +20,7 @@
   --color-cloud: #edeff2; /* second elevation: dividers, pill borders, drop zones */
   --color-fog: #e2e5ea; /* third elevation: decorative frames, muted overlays */
 
-  /* ── Verdict colours (functional only — never decoration) ── */
+  /* ── Verdict colours (functional only - never decoration) ── */
   --color-pass: #16a34a;
   --color-pass-wash: #dcfce7;
   --color-warn: #d97706;

@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 
-// PP Neue Corp Compact — headings & display
+// PP Neue Corp Compact - headings & display
 const compact = localFont({
   src: [
     { path: "./fonts/PPNeueCorp-Compact-Ultralight.otf", weight: "200", style: "normal" },
@@ -12,7 +12,7 @@ const compact = localFont({
   display: "swap",
 });
 
-// PP Neue Corp Normal — body & UI text
+// PP Neue Corp Normal - body & UI text
 const normal = localFont({
   src: [
     { path: "./fonts/PPNeueCorp-Normal-Ultralight.otf", weight: "200", style: "normal" },

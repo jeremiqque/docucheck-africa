@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
-// POST /api/admin/users — admin-only: provision a new user account.
+// POST /api/admin/users - admin-only: provision a new user account.
 export async function POST(request) {
   try {
     const admin = getSupabaseAdmin();

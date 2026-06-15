@@ -27,7 +27,7 @@ export async function POST(request) {
 
       return NextResponse.json({
         success: true,
-        message: "Registration successful — please check your email to verify your account",
+        message: "Registration successful. Please check your email to verify your account",
         user: data.user,
       });
     }

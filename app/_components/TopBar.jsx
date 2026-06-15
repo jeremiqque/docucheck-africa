@@ -142,7 +142,7 @@ export default function TopBar({ onMenu }) {
             )}
           </Link>
 
-          {/* Avatar menu — opens on hover, closes on leave */}
+          {/* Avatar menu - opens on hover, closes on leave */}
           <div
             className="relative"
             onMouseEnter={() => setMenuOpen(true)}

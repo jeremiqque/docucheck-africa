@@ -61,7 +61,7 @@ export default function LoginPage() {
 
       if (isRegister) {
         setNotice(
-          data.message || "Registration successful — check your email to verify your account."
+          data.message || "Registration successful. Check your email to verify your account."
         );
         setMode("login");
         setForm((f) => ({ ...f, password: "" }));
@@ -207,7 +207,7 @@ export default function LoginPage() {
                   />
                   Remember me
                 </label>
-                {/* Placeholder — password reset flow to be wired later */}
+                {/* Placeholder - password reset flow to be wired later */}
                 <button
                   type="button"
                   className="font-medium text-ink transition-opacity hover:opacity-70"
