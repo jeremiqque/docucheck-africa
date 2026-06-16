@@ -25,7 +25,7 @@ const STEPS = [
   "Saving results",
 ];
 
-const ALLOWED = [".pdf", ".jpg", ".jpeg", ".png", ".docx"];
+const ALLOWED = [".pdf", ".jpg", ".jpeg", ".png"];
 const MAX_BYTES = 10 * 1024 * 1024;
 
 const VERDICT = {
@@ -309,7 +309,7 @@ function DropZone({ fileInputRef, onFile, disabled }) {
       </p>
       <p className="mt-1 text-sm text-slate">or click to browse from your computer</p>
       <div className="mt-4 flex flex-wrap justify-center gap-2">
-        {["PDF", "JPEG", "PNG", "DOCX"].map((t) => (
+        {["PDF", "JPEG", "PNG"].map((t) => (
           <span
             key={t}
             className="rounded-pill border border-cloud bg-mist px-2.5 py-1 text-xs font-medium text-slate"

@@ -12,7 +12,7 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState("login"); // "login" | "register"
+  const [mode, setMode] = useState("login"); // "login" | "register" | "forgot"
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -25,9 +25,16 @@ export default function LoginPage() {
   });
 
   const isRegister = mode === "register";
+  const isForgot = mode === "forgot";
 
   function update(field) {
     return (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
+  }
+
+  function switchMode(next) {
+    setMode(next);
+    setError("");
+    setNotice("");
   }
 
   async function handleSubmit(e) {
@@ -37,6 +44,22 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      if (isForgot) {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+          form.email,
+          { redirectTo: `${window.location.origin}/reset-password` }
+        );
+        if (resetError) {
+          setError(resetError.message);
+          return;
+        }
+        setNotice(
+          "If an account exists for that email, a password reset link is on its way. Check your inbox."
+        );
+        setMode("login");
+        return;
+      }
+
       const payload = isRegister
         ? {
             action: "register",
@@ -82,6 +105,17 @@ export default function LoginPage() {
     }
   }
 
+  const title = isForgot
+    ? "Reset your password"
+    : isRegister
+    ? "Create your account"
+    : "Log in DocuCheck Africa";
+  const subtitle = isForgot
+    ? "Enter your email and we will send you a secure reset link"
+    : isRegister
+    ? "Set up your compliance workspace"
+    : "Sign in to your account";
+
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-mist">
       {/* Full-bleed background photo (graceful fallback to bg-mist if absent) */}
@@ -122,11 +156,9 @@ export default function LoginPage() {
       <div className="relative z-10 flex min-h-[calc(100vh-140px)] items-center justify-center px-4 py-10">
         <div className="w-full max-w-[440px] rounded-lg border border-cloud bg-paper p-8 shadow-[rgba(26,26,26,0.12)_0px_8px_24px] sm:p-10">
           <h1 className="font-display text-[28px] font-bold leading-tight tracking-tight text-ink">
-            {isRegister ? "Create your account" : "Log in DocuCheck Africa"}
+            {title}
           </h1>
-          <p className="mt-1 text-sm text-slate">
-            {isRegister ? "Set up your compliance workspace" : "Sign in to your account"}
-          </p>
+          <p className="mt-1 text-sm text-slate">{subtitle}</p>
 
           {notice && (
             <div className="mt-5 rounded-sm border border-pass bg-pass-wash px-4 py-3 text-sm text-pass">
@@ -176,29 +208,31 @@ export default function LoginPage() {
               />
             </Field>
 
-            <Field label="Password">
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={form.password}
-                  onChange={update("password")}
-                  placeholder="••••••••"
-                  autoComplete={isRegister ? "new-password" : "current-password"}
-                  className={`${inputClass} pr-11`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate transition-colors hover:text-ink"
-                >
-                  {showPassword ? <ViewOffIcon size={18} /> : <ViewIcon size={18} />}
-                </button>
-              </div>
-            </Field>
+            {!isForgot && (
+              <Field label="Password">
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={form.password}
+                    onChange={update("password")}
+                    placeholder="••••••••"
+                    autoComplete={isRegister ? "new-password" : "current-password"}
+                    className={`${inputClass} pr-11`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate transition-colors hover:text-ink"
+                  >
+                    {showPassword ? <ViewOffIcon size={18} /> : <ViewIcon size={18} />}
+                  </button>
+                </div>
+              </Field>
+            )}
 
-            {!isRegister && (
+            {!isRegister && !isForgot && (
               <div className="flex items-center justify-between text-sm">
                 <label className="flex cursor-pointer items-center gap-2 text-graphite">
                   <input
@@ -207,9 +241,9 @@ export default function LoginPage() {
                   />
                   Remember me
                 </label>
-                {/* Placeholder - password reset flow to be wired later */}
                 <button
                   type="button"
+                  onClick={() => switchMode("forgot")}
                   className="font-medium text-ink transition-opacity hover:opacity-70"
                 >
                   Forgot password?
@@ -223,29 +257,42 @@ export default function LoginPage() {
               className="mt-1 w-full rounded-md bg-ink py-3 text-sm font-medium text-paper transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading
-                ? isRegister
+                ? isForgot
+                  ? "Sending…"
+                  : isRegister
                   ? "Creating account…"
                   : "Signing in…"
+                : isForgot
+                ? "Send reset link"
                 : isRegister
                 ? "Create account"
                 : "Sign in"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate">
-            {isRegister ? "Already have an account? " : "No account? "}
-            <button
-              type="button"
-              onClick={() => {
-                setMode(isRegister ? "login" : "register");
-                setError("");
-                setNotice("");
-              }}
-              className="font-medium text-ink transition-opacity hover:opacity-70"
-            >
-              {isRegister ? "Log in here" : "Sign up here"}
-            </button>
-          </p>
+          {isForgot ? (
+            <p className="mt-6 text-center text-sm text-slate">
+              Remembered your password?{" "}
+              <button
+                type="button"
+                onClick={() => switchMode("login")}
+                className="font-medium text-ink transition-opacity hover:opacity-70"
+              >
+                Back to login
+              </button>
+            </p>
+          ) : (
+            <p className="mt-6 text-center text-sm text-slate">
+              {isRegister ? "Already have an account? " : "No account? "}
+              <button
+                type="button"
+                onClick={() => switchMode(isRegister ? "login" : "register")}
+                className="font-medium text-ink transition-opacity hover:opacity-70"
+              >
+                {isRegister ? "Log in here" : "Sign up here"}
+              </button>
+            </p>
+          )}
         </div>
       </div>
     </main>

@@ -6,12 +6,18 @@ import { classifyDocument, extractFields, detectAnomalies } from "@/lib/services
 import { checkCompliance } from "@/lib/services/ruleEngine";
 import { sendComplianceAlert } from "@/lib/services/alertService";
 
-// AWS S3 client
-const s3 = new S3Client({
-  region: process.env.AWS_REGION || "us-east-1",
+// The AI pipeline (vision OCR + 3 GPT calls) can exceed Vercel's default
+// function timeout. Use the Node runtime and allow up to 60 seconds.
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
+// Cloudflare R2 (S3-compatible) storage client
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
   },
 });
 
@@ -46,12 +52,11 @@ export async function POST(request) {
       "image/jpeg",
       "image/png",
       "image/jpg",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Invalid file type. Please upload PDF, JPEG, PNG or DOCX" },
+        { error: "Invalid file type. Please upload a PDF, JPEG or PNG" },
         { status: 400 }
       );
     }
@@ -63,21 +68,21 @@ export async function POST(request) {
       );
     }
 
-    // ── Step 3: Store in AWS S3 ────────────────────────────
-    console.log("Uploading to AWS S3...");
-    await s3.send(
+    // ── Step 3: Store in Cloudflare R2 ────────────────────────────
+    console.log("Uploading to Cloudflare R2...");
+    await r2.send(
       new PutObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET,
+        Bucket: process.env.R2_BUCKET,
         Key: fileName,
         Body: fileBuffer,
         ContentType: file.type,
       })
     );
 
-    const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+    const fileUrl = `${process.env.R2_PUBLIC_URL}/${fileName}`;
 
     // ── Step 4: OCR extraction ─────────────────────────────
-    const ocrResult = await extractText(fileBuffer);
+    const ocrResult = await extractText(fileBuffer, file.type);
 
     if (!ocrResult.text || ocrResult.text.trim().length < 10) {
       return NextResponse.json(
