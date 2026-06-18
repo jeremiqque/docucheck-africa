@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { Add01Icon } from "@/app/_components/icons";
 import { ProjectCard, EmptyState } from "@/app/_components/project-ui";
@@ -15,7 +16,7 @@ export default function ProjectsPage() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await apiFetch("/api/projects");
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load projects");
         const projs = data.projects ?? [];
@@ -23,7 +24,7 @@ export default function ProjectsPage() {
         const entries = await Promise.all(
           projs.map(async (p) => {
             try {
-              const r = await fetch(`/api/reports?projectId=${p.id}`);
+              const r = await apiFetch(`/api/reports?projectId=${p.id}`);
               const d = await r.json();
               return [p.id, r.ok ? d.report : { documents: [], checklist: [] }];
             } catch {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { useAuth } from "@/app/_components/useAuth";
 import Select from "@/app/_components/Select";
@@ -60,7 +61,7 @@ export default function UploadPage() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await apiFetch("/api/projects");
         const data = await res.json();
         if (!active) return;
         const projs = res.ok ? data.projects ?? [] : [];
@@ -120,7 +121,7 @@ export default function UploadPage() {
       fd.append("phase", phase);
       if (user?.email) fd.append("user_email", user.email);
 
-      const res = await fetch("/api/documents", { method: "POST", body: fd });
+      const res = await apiFetch("/api/documents", { method: "POST", body: fd });
       const data = await res.json();
 
       if (intervalRef.current) clearInterval(intervalRef.current);

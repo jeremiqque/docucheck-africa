@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft01Icon } from "@/app/_components/icons";
@@ -42,7 +43,7 @@ export default function NewProjectPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/projects", {
+      const res = await apiFetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

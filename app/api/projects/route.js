@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
-import supabase from "@/lib/supabaseClient";
+import { getSupabaseForToken, getBearerToken } from "@/lib/supabaseServer";
 import requirementsMatrix from "@/data/requirementsMatrix.json";
 
 // GET /api/projects
 // Returns all projects for the current user
 export async function GET(request) {
   try {
+    const __token = getBearerToken(request);
+    if (!__token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = getSupabaseForToken(__token);
     const { data, error } = await supabase
       .from("projects")
       .select("*")
@@ -36,6 +39,9 @@ export async function GET(request) {
 // Creates a new project and generates compliance checklists
 export async function POST(request) {
   try {
+    const __token = getBearerToken(request);
+    if (!__token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = getSupabaseForToken(__token);
     const body = await request.json();
     const { name, description, jurisdiction, project_type } = body;
 
@@ -48,6 +54,18 @@ export async function POST(request) {
     }
 
     // Create the project
+    const { data: __auth } = await supabase.auth.getUser();
+    const { data: __mem } = await supabase
+      .from("organisation_members")
+      .select("organisation_id")
+      .eq("user_id", __auth?.user?.id)
+      .limit(1)
+      .maybeSingle();
+    const __orgId = __mem?.organisation_id;
+    if (!__orgId) {
+      return NextResponse.json({ error: "No workspace found for this account" }, { status: 400 });
+    }
+
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .insert({
@@ -56,6 +74,7 @@ export async function POST(request) {
         jurisdiction,
         project_type,
         status: "pre_compliance",
+        organisation_id: __orgId,
       })
       .select()
       .single();

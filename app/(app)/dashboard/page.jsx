@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import supabase from "@/lib/supabaseClient";
 import { Add01Icon, CheckmarkCircle02Icon, Alert02Icon, CancelCircleIcon, Time02Icon } from "@/app/_components/icons";
@@ -17,7 +18,7 @@ export default function DashboardPage() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await apiFetch("/api/projects");
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load projects");
         const projs = data.projects ?? [];
@@ -25,7 +26,7 @@ export default function DashboardPage() {
         const entries = await Promise.all(
           projs.map(async (p) => {
             try {
-              const r = await fetch(`/api/reports?projectId=${p.id}`);
+              const r = await apiFetch(`/api/reports?projectId=${p.id}`);
               const d = await r.json();
               return [p.id, r.ok ? d.report : { documents: [], checklist: [] }];
             } catch {

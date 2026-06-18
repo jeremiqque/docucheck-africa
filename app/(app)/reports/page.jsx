@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { JURISDICTIONS, titleCase, EmptyState } from "@/app/_components/project-ui";
 import Select from "@/app/_components/Select";
@@ -22,7 +23,7 @@ export default function ReportsPage() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await apiFetch("/api/projects");
         const data = await res.json();
         if (!active) return;
         const projs = res.ok ? data.projects ?? [] : [];
@@ -47,7 +48,7 @@ export default function ReportsPage() {
     setError("");
     (async () => {
       try {
-        const res = await fetch(`/api/reports?projectId=${projectId}`);
+        const res = await apiFetch(`/api/reports?projectId=${projectId}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load report");
         if (active) setReport(data.report);
@@ -66,7 +67,7 @@ export default function ReportsPage() {
     setGenLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/reports", {
+      const res = await apiFetch("/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId }),

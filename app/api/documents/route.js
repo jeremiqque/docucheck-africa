@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import supabase from "@/lib/supabaseClient";
+import { getSupabaseForToken, getBearerToken } from "@/lib/supabaseServer";
 import { extractText } from "@/lib/services/ocrService";
 import { classifyDocument, extractFields, detectAnomalies } from "@/lib/services/gptService";
 import { checkCompliance } from "@/lib/services/ruleEngine";
@@ -25,6 +25,9 @@ const r2 = new S3Client({
 // Runs the complete 9-step AI compliance pipeline
 export async function POST(request) {
   try {
+    const __token = getBearerToken(request);
+    if (!__token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = getSupabaseForToken(__token);
     const formData = await request.formData();
     const file = formData.get("file");
     const projectId = formData.get("project_id");
@@ -211,6 +214,9 @@ export async function POST(request) {
 // Returns all documents for a project
 export async function GET(request) {
   try {
+    const __token = getBearerToken(request);
+    if (!__token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = getSupabaseForToken(__token);
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
 

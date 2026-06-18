@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
@@ -45,7 +46,7 @@ export default function ProjectDetailPage() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch(`/api/reports?projectId=${id}`);
+        const res = await apiFetch(`/api/reports?projectId=${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load project");
         if (!active) return;
@@ -76,7 +77,7 @@ export default function ProjectDetailPage() {
     setGenError("");
     setGenLoading(true);
     try {
-      const res = await fetch("/api/reports", {
+      const res = await apiFetch("/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId: id }),

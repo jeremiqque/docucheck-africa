@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
@@ -202,7 +203,7 @@ function SearchPalette({ onClose }) {
     inputRef.current?.focus();
     (async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await apiFetch("/api/projects");
         const data = await res.json();
         if (res.ok) setProjects(data.projects ?? []);
       } catch {
