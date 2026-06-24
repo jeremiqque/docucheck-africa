@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
 
     setPhase("done");
     await supabase.auth.signOut();
-    setTimeout(() => router.push("/"), 2500);
+    setTimeout(() => router.push("/login"), 2500);
   }
 
   return (
@@ -93,7 +93,7 @@ export default function ResetPasswordPage() {
 
       <header className="relative z-10 flex items-center justify-between px-6 py-5 md:px-10">
         <a
-          href="/"
+          href="/login"
           className="flex items-center gap-2 text-sm font-medium text-ink transition-opacity hover:opacity-70"
         >
           <ArrowLeft01Icon size={18} />
@@ -136,7 +136,7 @@ export default function ResetPasswordPage() {
               </p>
               <button
                 type="button"
-                onClick={() => router.push("/")}
+                onClick={() => router.push("/login")}
                 className="mt-6 w-full rounded-md bg-ink py-3 text-sm font-medium text-paper transition-colors hover:bg-black"
               >
                 Back to login

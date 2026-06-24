@@ -23,10 +23,41 @@ const normal = localFont({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://docucheck-africa.vercel.app";
+const DESC =
+  "Upload any construction compliance document and get a clear pass, warning, or fail verdict in under 30 seconds. Built for the rules in Nigeria, Ghana, and South Africa.";
+
 export const metadata = {
-  title: "DocuCheck Africa",
-  description:
-    "AI-assisted pre- and post-construction compliance management for the African built environment.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "DocuCheck Africa — AI compliance for African construction",
+    template: "%s · DocuCheck Africa",
+  },
+  description: DESC,
+  keywords: [
+    "construction compliance",
+    "building permit verification",
+    "Nigeria",
+    "Ghana",
+    "South Africa",
+    "COREN",
+    "NHBRC",
+    "compliance software",
+  ],
+  openGraph: {
+    title: "DocuCheck Africa — AI compliance for African construction",
+    description: DESC,
+    url: "/",
+    siteName: "DocuCheck Africa",
+    type: "website",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "DocuCheck Africa" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DocuCheck Africa — AI compliance for African construction",
+    description: DESC,
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({ children }) {

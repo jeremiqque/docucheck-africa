@@ -3,30 +3,28 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import supabase from "@/lib/supabaseClient";
+import { apiFetch } from "@/lib/apiFetch";
 import { useAuth } from "@/app/_components/useAuth";
 import { UserIcon, Cancel01Icon } from "@/app/_components/icons";
-import Select from "@/app/_components/Select";
 
 export default function AdminPage() {
-  const { role, loading: authLoading } = useAuth();
+  const { isOwner, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({ users: 0, projects: 0, documents: 0, alerts: 0 });
   const [showModal, setShowModal] = useState(false);
 
-  const isAdmin = role === "admin";
 
   const load = useCallback(async () => {
     try {
-      const [profiles, projCount, docCount, alertCount] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: true }),
+      const [memRes, projCount, docCount, alertCount] = await Promise.all([
+        apiFetch("/api/members").then((r) => r.json()),
         supabase.from("projects").select("*", { count: "exact", head: true }),
         supabase.from("documents").select("*", { count: "exact", head: true }),
         supabase.from("alerts").select("*", { count: "exact", head: true }).eq("is_read", false),
       ]);
-      if (profiles.error) throw profiles.error;
-      const rows = profiles.data ?? [];
+      const rows = memRes.members ?? [];
       setUsers(rows);
       setStats({
         users: rows.length,
@@ -43,18 +41,18 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!isAdmin) {
+    if (!isOwner) {
       setLoading(false);
       return;
     }
     load();
-  }, [authLoading, isAdmin, load]);
+  }, [authLoading, isOwner, load]);
 
-  if (!authLoading && !isAdmin) {
+  if (!authLoading && !isOwner) {
     return (
       <div className="px-4 py-16 text-center">
         <p className="font-display text-xl font-bold text-ink">Access restricted</p>
-        <p className="mt-1 text-sm text-slate">The admin panel is only available to administrators.</p>
+        <p className="mt-1 text-sm text-slate">This page is only available to workspace owners.</p>
         <Link href="/dashboard" className="mt-4 inline-block text-sm font-medium text-ink hover:opacity-70">
           ← Back to dashboard
         </Link>
@@ -62,11 +60,11 @@ export default function AdminPage() {
     );
   }
 
-  const admins = users.filter((u) => u.role === "admin").length;
-  const regular = users.length - admins;
+  const owners = users.filter((u) => u.role === "owner").length;
+  const regular = users.length - owners;
 
   const STAT = [
-    { label: "Total Users", value: stats.users, accent: "gold", sub: `${admins} admin · ${regular} user` },
+    { label: "Workspace members", value: stats.users, accent: "gold", sub: `${owners} owner · ${regular} member` },
     { label: "Total Projects", value: stats.projects, accent: "pass", sub: "Across all jurisdictions" },
     { label: "Documents Processed", value: stats.documents, accent: "pass", sub: "Since system launch" },
     {
@@ -82,7 +80,7 @@ export default function AdminPage() {
       {/* Page header */}
       <div className="mb-8">
         <h1 className="font-display text-[28px] font-bold tracking-tight text-ink">Admin panel</h1>
-        <p className="mt-1 text-sm text-slate">System overview and user management</p>
+        <p className="mt-1 text-sm text-slate">Your workspace overview and members</p>
       </div>
 
       {error && (
@@ -98,13 +96,13 @@ export default function AdminPage() {
 
       {/* Users */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-lg font-semibold text-ink">User management</h2>
+        <h2 className="font-display text-lg font-semibold text-ink">Workspace members</h2>
         <button
           type="button"
           onClick={() => setShowModal(true)}
           className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-black"
         >
-          + Add user
+          + Invite member
         </button>
       </div>
 
@@ -119,7 +117,7 @@ export default function AdminPage() {
           <p className="px-5 py-10 text-center text-sm text-slate">No users found.</p>
         ) : (
           users.map((u) => (
-            <div key={u.id} className="flex items-center gap-3 border-b border-cloud px-5 py-3.5 last:border-b-0">
+            <div key={u.user_id} className="flex items-center gap-3 border-b border-cloud px-5 py-3.5 last:border-b-0">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-pill bg-mist text-graphite">
                 <UserIcon size={18} />
               </span>
@@ -129,10 +127,10 @@ export default function AdminPage() {
               </div>
               <span
                 className={`rounded-pill px-2.5 py-1 text-xs font-medium ${
-                  u.role === "admin" ? "bg-ink text-paper" : "bg-mist text-graphite"
+                  u.role === "owner" ? "bg-ink text-paper" : "bg-mist text-graphite"
                 }`}
               >
-                {u.role === "admin" ? "Administrator" : "User"}
+                {u.role === "owner" ? "Owner" : "Member"}
               </span>
             </div>
           ))
@@ -171,19 +169,10 @@ const fieldClass =
   "w-full rounded-sm border border-cloud bg-mist px-3.5 py-2.5 text-sm text-ink placeholder:text-slate outline-none transition-colors focus:border-ink focus:bg-paper";
 
 function AddUserModal({ onClose, onCreated }) {
-  const [form, setForm] = useState({
-    full_name: "",
-    email: "",
-    password: "",
-    organisation: "",
-    role: "user",
-  });
+  const [form, setForm] = useState({ email: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  function update(field) {
-    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
-  }
+  const [sent, setSent] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -193,7 +182,7 @@ function AddUserModal({ onClose, onCreated }) {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/api/invites", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -203,10 +192,10 @@ function AddUserModal({ onClose, onCreated }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Could not create the user.");
+        setError(data.error || "Could not send the invitation.");
         return;
       }
-      onCreated();
+      setSent(true);
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -224,7 +213,7 @@ function AddUserModal({ onClose, onCreated }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-cloud px-6 py-4">
-          <h3 className="font-display text-lg font-semibold text-ink">Add user</h3>
+          <h3 className="font-display text-lg font-semibold text-ink">Invite member</h3>
           <button
             type="button"
             onClick={onClose}
@@ -235,53 +224,59 @@ function AddUserModal({ onClose, onCreated }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-6">
-          {error && (
-            <div className="rounded-sm border border-fail bg-fail-wash px-4 py-3 text-sm text-fail">{error}</div>
-          )}
-
-          <Field label="Full name" required>
-            <input type="text" required value={form.full_name} onChange={update("full_name")} placeholder="Jane Doe" className={fieldClass} />
-          </Field>
-          <Field label="Email address" required>
-            <input type="email" required value={form.email} onChange={update("email")} placeholder="jane@company.com" className={fieldClass} />
-          </Field>
-          <Field label="Temporary password" required>
-            <input type="text" required value={form.password} onChange={update("password")} placeholder="At least 8 characters" className={fieldClass} />
-          </Field>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Organisation">
-              <input type="text" value={form.organisation} onChange={update("organisation")} placeholder="Axiom Black" className={fieldClass} />
-            </Field>
-            <Select
-              label="Role"
-              required
-              value={form.role}
-              onChange={(v) => setForm((f) => ({ ...f, role: v }))}
-              options={[
-                { value: "user", label: "User" },
-                { value: "admin", label: "Administrator" },
-              ]}
-            />
-          </div>
-
-          <div className="mt-1 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitting ? "Creating…" : "Create user"}
-            </button>
+        {sent ? (
+          <div className="flex flex-col gap-4 p-6">
+            <div className="rounded-sm border border-pass bg-pass-wash px-4 py-3 text-sm text-pass">
+              Invitation sent to {form.email}. They will receive an email to join your workspace.
+            </div>
             <button
               type="button"
-              onClick={onClose}
-              className="rounded-md border border-ink px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist"
+              onClick={onCreated}
+              className="self-start rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-black"
             >
-              Cancel
+              Done
             </button>
           </div>
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-6">
+            {error && (
+              <div className="rounded-sm border border-fail bg-fail-wash px-4 py-3 text-sm text-fail">{error}</div>
+            )}
+
+            <p className="text-sm text-slate">
+              Invite someone to your workspace by email. They will get a link to set their password and join.
+            </p>
+
+            <Field label="Email address" required>
+              <input
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                placeholder="teammate@company.com"
+                className={fieldClass}
+              />
+            </Field>
+
+
+            <div className="mt-1 flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-2 rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? "Sending…" : "Send invite"}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-md border border-ink px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

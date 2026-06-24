@@ -77,3 +77,19 @@ h4 {
   text-transform: uppercase;
   color: var(--color-slate);
 }
+
+/* Logo marquee (agency strip) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Smooth in-page navigation + offset for the sticky nav */
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 5rem; }

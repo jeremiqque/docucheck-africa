@@ -1,357 +1,457 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import supabase from "@/lib/supabaseClient";
+import Link from "next/link";
 import {
-  ArrowLeft01Icon,
-  CustomerSupportIcon,
-  ViewIcon,
-  ViewOffIcon,
-} from "./_components/icons";
+  ComputerIcon, Clock01Icon, File01Icon, Globe02Icon, SparklesIcon, ChartColumnIcon, Layers01Icon, AiMagicIcon,
+  CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon, Notification01Icon, FolderLibraryIcon, UserIcon,
+  DocumentValidationIcon, DistributionIcon, File02Icon, ShieldIcon,
+} from "@/app/_components/icons";
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [mode, setMode] = useState("login"); // "login" | "register" | "forgot"
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [oauthLoading, setOauthLoading] = useState(false);
-  const [form, setForm] = useState({
-    fullName: "",
-    organisation: "",
-    email: "",
-    password: "",
-  });
+const NAV = [
+  ["How it works", "#how"],
+  ["Features", "#features"],
+  ["Jurisdictions", "#jurisdictions"],
+  ["Customers", "#customers"],
+];
 
-  const isRegister = mode === "register";
-  const isForgot = mode === "forgot";
+const AGENCIES = [
+  { src: "/landing/agencies/lasepa.svg", alt: "LASEPA, Lagos State Environmental Protection Agency" },
+  { src: "/landing/agencies/ghana-building-code.svg", alt: "Ghana Building Code" },
+  { src: "/landing/agencies/ghana-epa.svg", alt: "Ghana Environmental Protection Agency" },
+  { src: "/landing/agencies/nesrea.svg", alt: "NESREA" },
+  { src: "/landing/agencies/sabs.svg", alt: "SABS SANS 10400" },
+  { src: "/landing/agencies/nhbrc.svg", alt: "NHBRC" },
+];
 
-  function update(field) {
-    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
-  }
+const PROBLEMS = [
+  ["One lapse halts everything", "A single expired certificate can stop an entire project. Manual tracking means you find out far too late to act."],
+  ["Nothing covers the full lifecycle", "No single tool follows a project from pre-construction permits all the way to post-construction handover."],
+  ["Built for everywhere but here", "COREN, NHBRC, EPA Ghana, no existing AI tool encodes these African frameworks. So they get checked by hand, or not at all."],
+];
 
-  function switchMode(next) {
-    setMode(next);
-    setError("");
-    setNotice("");
-  }
+const STEPS = [
+  ["Upload", "A PDF, scan or phone photo. Anything legible works."],
+  ["Read", "The document is transcribed, classified and its key fields extracted."],
+  ["Check", "Six rules run against the requirements for your jurisdiction."],
+  ["Verdict", "Pass, Warning or Fail in plain English, with an alert if it matters."],
+];
 
-  async function handleGoogle() {
-    setError("");
-    setOauthLoading(true);
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    // On success the browser redirects to Google, so nothing else runs here.
-    if (oauthError) {
-      setError(oauthError.message);
-      setOauthLoading(false);
-    }
-  }
+const TABS = [
+  {
+    key: "Read & classify",
+    title: "It reads the document so you don't have to",
+    body: "Upload a scan or a phone photo and the document is transcribed, sorted into the right category, and stripped down to the eight fields that matter.",
+    points: [
+      "Classifies into 8 document types automatically",
+      "Works on poor-lighting field photos",
+      "Pulls issue date, expiry, authority, holder & more",
+    ],
+    card: { name: "COREN Certificate", meta: "Drop COREN_Certificate.pdf", match: "98% match" },
+  },
+  {
+    key: "Rules engine",
+    title: "Six rules on every single document",
+    body: "Expiry, mandatory fields, issuing authority, jurisdiction, issue date and date sequence, each checked against the requirements for the project's phase.",
+    points: [
+      "Jurisdiction-specific rule sets out of the box",
+      "Pass, warning or fail with a plain-English reason",
+      "Catches expired, future-dated and mismatched documents",
+    ],
+    card: { name: "Building Permit", meta: "Verdict computed", match: "Pass" },
+  },
+  {
+    key: "Expiry alerts",
+    title: "Warnings land before problems do",
+    body: "Every document with an expiry date is tracked. Automatic email alerts go out at 90, 60 and 30 days so nothing lapses unnoticed before an inspection.",
+    points: [
+      "Automatic email alerts at 90 / 60 / 30 days",
+      "Per-project and per-document tracking",
+      "Renewals flagged while there is still time",
+    ],
+    card: { name: "Insurance Certificate", meta: "Expires in 30 days", match: "Alert sent" },
+  },
+  {
+    key: "Audit packs",
+    title: "Clearance reports & handover audit packages",
+    body: "Generate a complete, timestamped record of every check on demand, formatted and ready for inspection or project handover.",
+    points: [
+      "Audit packages, generated on demand",
+      "Complete, timestamped verification history",
+      "Ready for municipal submission and handover",
+    ],
+    card: { name: "Audit Package", meta: "12 documents verified", match: "Ready" },
+  },
+];
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-    setNotice("");
-    setLoading(true);
+const JURISDICTIONS = [
+  ["Nigeria", "Pre and post construction requirements under Nigeria's national engineering and environmental frameworks.", ["COREN", "NBC", "NSITF", "NAICOM", "NESREA"]],
+  ["Ghana", "Ghana Building Code requirements, including LUSPA development permits and EPA environmental approvals.", ["EPA Ghana", "GNFS", "Ghana Building Code", "LUSPA"]],
+  ["South Africa", "NHBRC enrolment, SANS 10400 building compliance and DFFE environmental authorisation.", ["NHBRC", "SANS 10400", "FSCA", "DFFE"]],
+];
 
-    try {
-      if (isForgot) {
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-          form.email,
-          { redirectTo: `${window.location.origin}/reset-password` }
-        );
-        if (resetError) {
-          setError(resetError.message);
-          return;
-        }
-        setNotice(
-          "If an account exists for that email, a password reset link is on its way. Check your inbox."
-        );
-        setMode("login");
-        return;
-      }
+const STATS = [
+  ["~90%", "Classification accuracy in our testing"],
+  ["<30s", "From upload to a clear verdict"],
+  ["3", "Markets supported out of the box"],
+  ["6", "Compliance checks on every document"],
+];
 
-      const payload = isRegister
-        ? {
-            action: "register",
-            email: form.email,
-            password: form.password,
-            full_name: form.fullName,
-            organisation: form.organisation,
-          }
-        : { action: "login", email: form.email, password: form.password };
+const TESTIMONIALS = [
+  {
+    tag: "Crisis avoided",
+    icon: ShieldIcon,
+    quote: "An expired COREN cert shut us down for a week once. Now the alerts reach me 90 days out it never becomes a problem on site anymore.",
+    name: "Adebayo Okonkwo",
+    role: "Project Manager · Lagos, Nigeria",
+  },
+  {
+    tag: "Field-proven",
+    icon: CheckmarkBadge01Icon,
+    quote: "It read a GhIE licence correctly from a photo I took in bad lighting. That kind of accuracy is what makes it usable out on a real site.",
+    name: "Kwame Asante",
+    role: "Site Engineer · Accra, Ghana",
+  },
+  {
+    tag: "Days \u2192 seconds",
+    icon: Clock01Icon,
+    quote: "Putting an audit package together used to take two days. DocuCheck produces it in seconds, already formatted for municipal submission.",
+    name: "Nomvula Mokoena",
+    role: "Compliance Officer · Cape Town, South Africa",
+  },
+];
 
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+const BLOBS = ["/landing/blob-2.svg", "/landing/blob-4.svg", "/landing/blob-5.svg", "/landing/blob-6.svg", "/landing/blob-7.svg"];
 
-      if (!res.ok) {
-        setError(data.error || "Something went wrong. Please try again.");
-        return;
-      }
+const PROBLEM_ICONS = [Clock01Icon, File01Icon, Globe02Icon];
+const STEP_ICONS = [CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon];
+const TAB_ICONS = [DocumentValidationIcon, DistributionIcon, Clock01Icon, File02Icon];
 
-      if (isRegister) {
-        setNotice(
-          data.message || "Registration successful. Check your email to verify your account."
-        );
-        setMode("login");
-        setForm((f) => ({ ...f, password: "" }));
-      } else {
-        // Persist the session in the browser so the app shell (useAuth) sees it.
-        if (data.session?.access_token) {
-          await supabase.auth.setSession({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-          });
-        }
-        router.push("/dashboard");
-      }
-    } catch {
-      setError("Network error. Please check your connection and try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const title = isForgot
-    ? "Reset your password"
-    : isRegister
-    ? "Create your account"
-    : "Log in DocuCheck Africa";
-  const subtitle = isForgot
-    ? "Enter your email and we will send you a secure reset link"
-    : isRegister
-    ? "Set up your compliance workspace"
-    : "Sign in to your account";
+export default function LandingPage() {
+  const [menu, setMenu] = useState(false);
+  const [tab, setTab] = useState(0);
+  const active = TABS[tab];
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-mist">
-      {/* Full-bleed background photo (graceful fallback to bg-mist if absent) */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/login-bg.png')" }}
-        aria-hidden="true"
-      />
-      <div className="absolute inset-0 bg-paper/20" aria-hidden="true" />
-
-      {/* Top bar */}
-      <header className="relative z-10 flex items-center justify-between px-6 py-5 md:px-10">
-        <a
-          href="/"
-          className="flex items-center gap-2 text-sm font-medium text-ink transition-opacity hover:opacity-70"
-        >
-          <ArrowLeft01Icon size={18} />
-          Back
-        </a>
-
-        <div className="flex items-center gap-2">
-          <img src="/brand/logo.svg" alt="" width={30} height={20} />
-          <span className="font-display text-lg font-bold tracking-tight text-ink">
-            DocuCheck Africa
-          </span>
+    <main className="min-h-screen bg-paper text-ink">
+      {/* ── NAV ── */}
+      <header className="sticky top-0 z-50 border-b border-cloud bg-paper/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-5 lg:px-10">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/landing/logo.svg" alt="DocuCheck Africa" className="h-6 w-auto" />
+          </Link>
+          <nav className="hidden items-center gap-9 text-[15px] text-graphite md:flex">
+            {NAV.map(([l, h]) => (
+              <a key={l} href={h} className="transition-colors hover:text-ink">{l}</a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="hidden text-[15px] font-medium text-ink hover:opacity-70 sm:block">Log in</Link>
+            <Link href="/login" className="rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-5 py-2 text-sm font-medium text-paper transition-[filter] hover:brightness-110">Start free</Link>
+            <button type="button" onClick={() => setMenu((o) => !o)} aria-label="Menu" className="grid h-9 w-9 place-items-center rounded-none text-ink hover:bg-mist md:hidden">
+              <span className="text-xl leading-none">{menu ? "✕" : "☰"}</span>
+            </button>
+          </div>
         </div>
-
-        <a
-          href="mailto:support@jeremiahalalade.me"
-          className="flex items-center gap-2 text-sm font-medium text-ink transition-opacity hover:opacity-70"
-        >
-          <CustomerSupportIcon size={18} />
-          <span className="hidden sm:inline">Contact support</span>
-        </a>
+        {menu && (
+          <div className="border-t border-cloud bg-paper px-5 py-4 md:hidden">
+            <nav className="flex flex-col gap-3 text-[15px] text-graphite">
+              {NAV.map(([l, h]) => <a key={l} href={h} onClick={() => setMenu(false)}>{l}</a>)}
+              <Link href="/login" onClick={() => setMenu(false)} className="text-ink">Log in</Link>
+            </nav>
+          </div>
+        )}
       </header>
 
-      {/* Centered card */}
-      <div className="relative z-10 flex min-h-[calc(100vh-140px)] items-center justify-center px-4 py-10">
-        <div className="w-full max-w-[440px] rounded-lg border border-cloud bg-paper p-8 shadow-[rgba(26,26,26,0.12)_0px_8px_24px] sm:p-10">
-          <h1 className="font-display text-[28px] font-bold leading-tight tracking-tight text-ink">
-            {title}
-          </h1>
-          <p className="mt-1 text-sm text-slate">{subtitle}</p>
-
-          {notice && (
-            <div className="mt-5 rounded-sm border border-pass bg-pass-wash px-4 py-3 text-sm text-pass">
-              {notice}
-            </div>
-          )}
-          {error && (
-            <div className="mt-5 rounded-sm border border-fail bg-fail-wash px-4 py-3 text-sm text-fail">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-5">
-            {isRegister && (
-              <>
-                <Field label="Full name">
-                  <input
-                    type="text"
-                    required
-                    value={form.fullName}
-                    onChange={update("fullName")}
-                    placeholder="Alalade Jeremiah"
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label="Organisation">
-                  <input
-                    type="text"
-                    value={form.organisation}
-                    onChange={update("organisation")}
-                    placeholder="Axiom Black"
-                    className={inputClass}
-                  />
-                </Field>
-              </>
-            )}
-
-            <Field label="Email address">
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={update("email")}
-                placeholder="you@company.com"
-                autoComplete="email"
-                className={inputClass}
-              />
-            </Field>
-
-            {!isForgot && (
-              <Field label="Password">
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={form.password}
-                    onChange={update("password")}
-                    placeholder="••••••••"
-                    autoComplete={isRegister ? "new-password" : "current-password"}
-                    className={`${inputClass} pr-11`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate transition-colors hover:text-ink"
-                  >
-                    {showPassword ? <ViewOffIcon size={18} /> : <ViewIcon size={18} />}
-                  </button>
-                </div>
-              </Field>
-            )}
-
-            {!isRegister && !isForgot && (
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex cursor-pointer items-center gap-2 text-graphite">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded-sm border-cloud accent-ink"
-                  />
-                  Remember me
-                </label>
-                <button
-                  type="button"
-                  onClick={() => switchMode("forgot")}
-                  className="font-medium text-ink transition-opacity hover:opacity-70"
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-1 w-full rounded-md bg-ink py-3 text-sm font-medium text-paper transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading
-                ? isForgot
-                  ? "Sending…"
-                  : isRegister
-                  ? "Creating account…"
-                  : "Signing in…"
-                : isForgot
-                ? "Send reset link"
-                : isRegister
-                ? "Create account"
-                : "Sign in"}
-            </button>
-          </form>
-
-          {!isForgot && (
-            <>
-              <div className="my-5 flex items-center gap-3">
-                <span className="h-px flex-1 bg-cloud" />
-                <span className="text-xs text-slate">or</span>
-                <span className="h-px flex-1 bg-cloud" />
-              </div>
-              <button
-                type="button"
-                onClick={handleGoogle}
-                disabled={oauthLoading}
-                className="flex w-full items-center justify-center gap-3 rounded-md border border-cloud bg-paper py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <GoogleGlyph />
-                {oauthLoading ? "Redirecting…" : "Continue with Google"}
-              </button>
-            </>
-          )}
-
-          {isForgot ? (
-            <p className="mt-6 text-center text-sm text-slate">
-              Remembered your password?{" "}
-              <button
-                type="button"
-                onClick={() => switchMode("login")}
-                className="font-medium text-ink transition-opacity hover:opacity-70"
-              >
-                Back to login
-              </button>
-            </p>
-          ) : (
-            <p className="mt-6 text-center text-sm text-slate">
-              {isRegister ? "Already have an account? " : "No account? "}
-              <button
-                type="button"
-                onClick={() => switchMode(isRegister ? "login" : "register")}
-                className="font-medium text-ink transition-opacity hover:opacity-70"
-              >
-                {isRegister ? "Log in here" : "Sign up here"}
-              </button>
-            </p>
-          )}
+      {/* ── HERO ── */}
+      <section className="mx-auto max-w-[1240px] px-5 pb-10 pt-16 text-center lg:px-10 lg:pt-24">
+        <span className="inline-flex items-center gap-2 rounded-none border border-cloud bg-paper px-4 py-1.5 text-sm text-graphite">
+          <AiMagicIcon size={15} className="text-gold" /> AI compliance for African construction
+        </span>
+        <h1 className="mx-auto mt-7 max-w-[18ch] font-display text-[48px] font-bold leading-[1.02] tracking-tight sm:text-[64px]">
+          One expired permit can shut your whole site.
+        </h1>
+        <p className="relative mx-auto mt-3 inline-block">
+          <span className="absolute inset-x-[-6px] bottom-1 top-2 -z-0 -rotate-1 rounded-none bg-gold" aria-hidden="true" />
+          <span className="relative font-display text-[36px] font-bold tracking-tight text-ink sm:text-[48px]">Catch it first.</span>
+        </p>
+        <p className="mx-auto mt-7 max-w-[62ch] text-xl leading-relaxed text-graphite">
+          Upload any compliance document. DocuCheck reads it, checks it against the rules in Nigeria, Ghana and South Africa, and hands you a clear verdict in under 30 seconds.
+        </p>
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link href="/login" className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110 sm:w-auto">
+            Verify a document free <span aria-hidden="true">&rarr;</span>
+          </Link>
+          <a href="#how" className="inline-flex w-full items-center justify-center rounded-none border border-ink px-6 py-3 text-base font-medium text-ink transition-colors hover:bg-mist sm:w-auto">
+            See how it works
+          </a>
         </div>
-      </div>
+        <p className="mt-5 text-sm text-slate">Free to try. No credit card needed.</p>
+        <p className="mt-6 text-sm text-slate">Trusted by site teams &amp; compliance officers across three markets</p>
+
+        {/* product preview (video) */}
+        <div className="mx-auto mt-14 w-full max-w-[1240px] overflow-hidden rounded-none border border-cloud bg-mist shadow-[rgba(26,26,26,0.12)_0px_30px_70px]">
+          <video
+            className="h-auto w-full"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/landing/hero-poster.jpg"
+          >
+            <source src="/landing/hero.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </section>
+
+      {/* ── AGENCY STRIP (marquee) ── */}
+      <section className="relative overflow-hidden border-y border-cloud bg-paper py-12">
+        <p className="micro-label text-center">Knows the rulebooks for</p>
+        <div className="relative mt-8">
+          <div className="flex w-max animate-marquee">
+            {[0, 1].map((g) => (
+              <div key={g} className="flex shrink-0" aria-hidden={g === 1}>
+                {AGENCIES.map((a, i) => (
+                  <div key={i} className="flex w-[200px] items-center justify-center border-l border-cloud px-6 sm:w-[240px]">
+                    <img src={a.src} alt={a.alt} className="h-16 w-auto object-contain mix-blend-multiply sm:h-20" />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-paper to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-paper to-transparent" />
+        </div>
+      </section>
+
+      {/* ── THE PROBLEM ── */}
+      <section className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
+        <SectionPill icon={ComputerIcon}>The problem</SectionPill>
+        <h2 className="mx-auto mt-5 max-w-[34ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
+          Compliance still lives on spreadsheets until a site gets shut down.
+        </h2>
+        <p className="mx-auto mt-4 max-w-[60ch] text-lg text-graphite">
+          Permits expire quietly. The gap surfaces during an inspection, not before it. Here's what teams are up against today.
+        </p>
+        <div className="mt-12 grid grid-cols-1 gap-5 text-left md:grid-cols-3">
+          {PROBLEMS.map(([t, d], i) => {
+            const Icon = PROBLEM_ICONS[i];
+            return (
+              <div key={t} className="rounded-none border border-cloud bg-paper p-7">
+                <Icon size={26} className="text-ink" />
+                <h3 className="mt-5 font-display text-xl font-semibold">{t}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-slate">{d}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section id="how" className="border-t border-cloud bg-mist">
+        <div className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
+          <SectionPill icon={Layers01Icon}>How it works</SectionPill>
+          <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">From upload to verdict in four steps</h2>
+          <p className="mx-auto mt-4 max-w-[58ch] text-lg text-graphite">Drop in a document and the pipeline handles the rest. No setup, no manual data entry.</p>
+          <div className="mt-12 grid grid-cols-1 gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map(([t, d], i) => {
+              const Icon = STEP_ICONS[i];
+              return (
+                <div key={t} className="rounded-none border border-cloud bg-paper p-6">
+                  <div className="flex items-center justify-between">
+                    <Icon size={24} className="text-ink" />
+                    <span className="font-display text-sm font-bold text-slate">0{i + 1}</span>
+                  </div>
+                  <h3 className="mt-4 font-display text-lg font-semibold">{t}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate">{d}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHAT IT DOES (tabs) ── */}
+      <section id="features" className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
+        <div className="text-center">
+          <SectionPill icon={SparklesIcon}>What it does</SectionPill>
+          <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
+            Everything that keeps a project clearance-ready, in one place.
+          </h2>
+          <p className="mx-auto mt-4 max-w-[60ch] text-lg text-graphite">
+            Pre and post construction. Three jurisdictions. One system that actually understands the documents.
+          </p>
+        </div>
+        <div className="mt-10 flex justify-center">
+          <div className="inline-flex flex-wrap items-center justify-center gap-1 bg-mist p-1.5">
+            {TABS.map((t, i) => {
+              const Icon = TAB_ICONS[i];
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setTab(i)}
+                  className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${i === tab ? "bg-paper text-ink shadow-[rgba(26,26,26,0.08)_0px_1px_2px]" : "text-graphite hover:text-ink"}`}
+                >
+                  <Icon size={18} /> {t.key}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="mt-8 grid grid-cols-1 items-center gap-8 rounded-none border border-cloud bg-mist p-7 sm:p-10 lg:grid-cols-2">
+          <div>
+            <h3 className="font-display text-[26px] font-bold tracking-tight">{active.title}</h3>
+            <p className="mt-3 text-lg leading-relaxed text-graphite">{active.body}</p>
+            <ul className="mt-6 space-y-3">
+              {active.points.map((p) => (
+                <li key={p} className="flex items-start gap-2.5 text-graphite">
+                  <span className="mt-0.5 text-pass">&#10003;</span> {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-none border border-cloud bg-paper p-5">
+            <div className="flex items-center gap-1.5 pb-3">
+              <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
+              <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
+              <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
+            </div>
+            <div className="grid h-32 place-items-center rounded-none border border-dashed border-cloud bg-mist text-sm text-slate">
+              {active.card.meta}
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-none bg-mist px-4 py-3">
+              <span className="text-sm font-medium text-ink">{active.card.name}</span>
+              <span className="text-sm font-semibold text-pass">{active.card.match}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── JURISDICTIONS ── */}
+      <section id="jurisdictions" className="border-t border-cloud bg-mist">
+        <div className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
+          <SectionPill icon={Globe02Icon}>Supported jurisdictions</SectionPill>
+          <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">Built for Africa's regulatory reality</h2>
+          <p className="mx-auto mt-4 max-w-[62ch] text-lg text-graphite">DocuCheck ships knowing the specific frameworks of three markets, no configuration required.</p>
+          <div className="mt-12 grid grid-cols-1 gap-5 text-left md:grid-cols-3">
+            {JURISDICTIONS.map(([name, body, tags]) => (
+              <div key={name} className="rounded-none border border-cloud bg-paper p-7">
+                <h3 className="font-display text-xl font-semibold">{name}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-slate">{body}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <span key={tag} className="rounded-none bg-mist px-3 py-1 text-xs font-medium text-graphite">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── BY THE NUMBERS ── */}
+      <section className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
+        <SectionPill icon={ChartColumnIcon}>By the numbers</SectionPill>
+        <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">Tuned for accuracy, speed and scale</h2>
+        <div className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4">
+          {STATS.map(([v, l]) => (
+            <div key={l}>
+              <p className="font-display text-[48px] font-bold leading-none text-ink">{v}</p>
+              <p className="mt-3 text-sm text-slate">{l}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section id="customers" className="border-t border-cloud bg-mist">
+        <div className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
+          <div className="text-center">
+            <SectionPill icon={SparklesIcon}>Testimonials</SectionPill>
+            <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
+              The people doing the work, on what changed
+            </h2>
+          </div>
+          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+            {TESTIMONIALS.map((t) => {
+              const Icon = t.icon;
+              return (
+                <figure key={t.name} className="flex flex-col border border-cloud bg-paper p-7">
+                  <span className="inline-flex w-fit items-center gap-1.5 bg-pass-wash px-2.5 py-1 text-xs font-medium text-pass">
+                    <Icon size={14} /> {t.tag}
+                  </span>
+                  <blockquote className="mt-5 flex-1 text-[15px] leading-relaxed text-graphite">&ldquo;{t.quote}&rdquo;</blockquote>
+                  <figcaption className="mt-6">
+                    <p className="font-display text-base font-semibold text-ink">{t.name}</p>
+                    <p className="mt-0.5 text-sm text-slate">{t.role}</p>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="bg-gold">
+        <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-8 px-5 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+          <div className="max-w-[620px]">
+            <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-ink sm:text-[42px]">
+              Stop chasing certificates. Start trusting the verdict.
+            </h2>
+            <p className="mt-4 text-lg text-ink/80">
+              Join the construction teams across Africa verifying documents automatically and sleeping better before inspections.
+            </p>
+            <p className="mt-3 text-sm font-medium text-ink/70">Free to try. No credit card needed.</p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110">
+              Verify a document free <span aria-hidden="true">&rarr;</span>
+            </Link>
+            <a href="mailto:support@jeremiahalalade.me" className="inline-flex items-center justify-center rounded-none border border-ink px-6 py-3 text-base font-medium text-ink transition-colors hover:bg-gold-deep">
+              Book a demo
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="border-t-[3px] border-gold bg-paper">
+        <div className="mx-auto max-w-[1240px] px-5 py-16 lg:px-10">
+          {/* Agency blobs flanking the central DocuCheck mark */}
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
+            <img src="/landing/blob-2.svg" alt="COREN" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-4.svg" alt="Nigeria" className="h-12 w-auto object-contain" />
+            <img src="/landing/logo-3d.png" alt="DocuCheck Africa" className="mx-2 h-28 w-auto object-contain sm:h-40" />
+            <img src="/landing/blob-6.svg" alt="NHBRC" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-7.svg" alt="Ghana" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-5.svg" alt="South Africa" className="h-12 w-auto object-contain" />
+          </div>
+          {/* Brand + copyright */}
+          <div className="mt-12 flex flex-col gap-4 border-t border-cloud pt-8 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-[420px]">
+              <div className="flex items-center gap-2">
+                <img src="/landing/logo.svg" alt="" className="h-5 w-auto" />
+                <span className="font-display text-lg font-bold tracking-tight">DocuCheck Africa</span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-slate">
+                AI-assisted compliance verification for construction projects in Nigeria, Ghana and South Africa.
+              </p>
+            </div>
+            <p className="text-xs text-slate">&copy; 2026 DocuCheck Africa. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
 
-const inputClass =
-  "w-full rounded-sm border border-cloud bg-mist px-3.5 py-2.5 text-sm text-ink placeholder:text-slate outline-none transition-colors focus:border-ink focus:bg-paper";
-
-function Field({ label, children }) {
+function SectionPill({ icon: Icon, children }) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-graphite">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-function GoogleGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z" />
-      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z" />
-      <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z" />
-      <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z" />
-    </svg>
+    <span className="inline-flex items-center gap-2 rounded-none border border-cloud bg-paper px-3.5 py-1.5 text-sm font-medium text-graphite">
+      {Icon ? <Icon size={15} className="text-graphite" /> : <span className="h-1.5 w-1.5 rounded-pill bg-gold" />} {children}
+    </span>
   );
 }

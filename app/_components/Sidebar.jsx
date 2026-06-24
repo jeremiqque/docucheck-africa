@@ -39,10 +39,10 @@ const NAV_GROUPS = [
 
 export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
   const pathname = usePathname();
-  const { role } = useAuth();
+  const { isOwner } = useAuth();
   const [hovered, setHovered] = useState(false);
 
-  const isAdmin = role !== "user"; // admins (and unknown role during dev) see SYSTEM
+  // Only workspace owners see the SYSTEM (Admin) group.
   // Collapsed icon-rail by default on desktop; expands on hover. Mobile drawer is always expanded.
   const expanded = mobileOpen || hovered;
 
@@ -89,7 +89,7 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-5">
-        {NAV_GROUPS.filter((g) => !g.adminOnly || isAdmin).map((group) => (
+        {NAV_GROUPS.filter((g) => !g.adminOnly || isOwner).map((group) => (
           <div key={group.label} className="mb-5">
             {expanded && <p className="micro-label whitespace-nowrap px-3 pb-2">{group.label}</p>}
             <ul className="flex flex-col gap-1">
@@ -101,11 +101,11 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
                       href={href}
                       onClick={onClose}
                       title={!expanded ? label : undefined}
-                      className={`flex items-center gap-3 rounded-md py-2.5 text-sm font-medium transition-colors ${
+                      className={`group flex items-center gap-3 rounded-md py-2.5 text-sm font-medium transition-colors ${
                         active ? "bg-ink text-paper" : "text-ink hover:bg-mist"
                       } ${expanded ? "px-3" : "justify-center px-0"}`}
                     >
-                      <Icon size={20} className="shrink-0" />
+                      <Icon size={20} className="shrink-0 transition-transform duration-200 ease-out group-hover:scale-110 group-hover:-translate-y-0.5 group-active:scale-90" />
                       {expanded && <span className="truncate whitespace-nowrap">{label}</span>}
                     </Link>
                   </li>

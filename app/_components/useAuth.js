@@ -5,13 +5,15 @@ import supabase from "@/lib/supabaseClient";
 
 /**
  * Client auth hook.
- * Reads the persisted Supabase session and the matching `profiles` row
- * (full_name, role, organisation). Used by the sidebar for the user block
- * and to gate the admin-only nav.
+ * Reads the persisted Supabase session, the matching `profiles` row, and
+ * whether the user OWNS a workspace (organisation_members role = 'owner').
+ * Workspace ownership is what gates the Admin page + invites.
  */
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [organisationId, setOrganisationId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +21,11 @@ export function useAuth() {
 
     async function loadProfile(u) {
       if (!u) {
-        if (active) setProfile(null);
+        if (active) {
+          setProfile(null);
+          setIsOwner(false);
+          setOrganisationId(null);
+        }
         return;
       }
       const { data } = await supabase
@@ -28,6 +34,18 @@ export function useAuth() {
         .eq("id", u.id)
         .single();
       if (active) setProfile(data ?? null);
+
+      const { data: mem } = await supabase
+        .from("organisation_members")
+        .select("organisation_id, role")
+        .eq("user_id", u.id)
+        .eq("role", "owner")
+        .limit(1)
+        .maybeSingle();
+      if (active) {
+        setIsOwner(!!mem);
+        setOrganisationId(mem?.organisation_id ?? null);
+      }
     }
 
     (async () => {
@@ -59,7 +77,6 @@ export function useAuth() {
     await supabase.auth.signOut();
   }
 
-  // Display helpers with sensible fallbacks
   const displayName = profile?.full_name || user?.email || "DocuCheck user";
   const role = profile?.role || "user";
   const initials = displayName
@@ -68,5 +85,5 @@ export function useAuth() {
     .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
 
-  return { user, profile, loading, logout, displayName, role, initials };
+  return { user, profile, loading, logout, displayName, role, initials, isOwner, organisationId };
 }

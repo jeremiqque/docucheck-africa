@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./useAuth";
+import BrandLoader from "./BrandLoader";
 
 /**
  * Protects the authenticated app shell. Redirects to the login page when
@@ -14,14 +15,12 @@ export default function AppGuard({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/");
+    if (!loading && !user) router.replace("/login");
   }, [loading, user, router]);
 
   if (loading) {
     return (
-      <div className="grid min-h-screen place-items-center bg-paper">
-        <span className="h-6 w-6 animate-spin rounded-pill border-2 border-cloud border-t-ink" />
-      </div>
+<BrandLoader fullscreen />
     );
   }
   if (!user) return null;

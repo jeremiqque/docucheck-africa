@@ -48,3 +48,16 @@ export const CheckmarkCircle02Icon = makeIcon("CheckmarkCircle02Icon");
 export const Alert02Icon = makeIcon("Alert02Icon");
 export const CancelCircleIcon = makeIcon("CancelCircleIcon");
 export const Time02Icon = makeIcon("Time02Icon");
+
+/* Landing page */
+export const ComputerIcon = makeIcon("ComputerIcon");
+export const Clock01Icon = makeIcon("Clock01Icon");
+export const File01Icon = makeIcon("File01Icon");
+export const Globe02Icon = makeIcon("Globe02Icon");
+export const SparklesIcon = makeIcon("SparklesIcon");
+export const ChartColumnIcon = makeIcon("ChartColumnIcon");
+export const Layers01Icon = makeIcon("Layers01Icon");
+export const AiMagicIcon = makeIcon("AiMagicIcon");
+export const DistributionIcon = makeIcon("DistributionIcon");
+export const File02Icon = makeIcon("File02Icon");
+export const ShieldIcon = makeIcon("ShieldIcon");

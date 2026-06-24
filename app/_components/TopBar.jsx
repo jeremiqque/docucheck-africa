@@ -92,9 +92,9 @@ export default function TopBar({ onMenu }) {
           type="button"
           onClick={onMenu}
           aria-label="Open menu"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-sm text-ink transition-colors hover:bg-mist lg:hidden"
+          className="group grid h-9 w-9 shrink-0 place-items-center rounded-sm text-ink transition-colors hover:bg-mist lg:hidden"
         >
-          <Menu01Icon size={22} />
+          <Menu01Icon size={22} className="transition-transform duration-200 ease-out group-hover:scale-110 group-active:scale-90" />
         </button>
 
         {/* Breadcrumb (desktop) */}
@@ -120,9 +120,9 @@ export default function TopBar({ onMenu }) {
             type="button"
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
-            className="flex items-center gap-2 rounded-md border border-cloud bg-mist px-2.5 py-1.5 text-sm text-slate transition-colors hover:border-graphite sm:min-w-[200px]"
+            className="group flex items-center gap-2 rounded-md border border-cloud bg-mist px-2.5 py-1.5 text-sm text-slate transition-colors hover:border-graphite sm:min-w-[200px]"
           >
-            <Search01Icon size={16} />
+            <Search01Icon size={16} className="transition-transform duration-200 ease-out group-hover:scale-110 group-active:scale-90" />
             <span className="hidden sm:inline">Search…</span>
             <span className="ml-auto hidden rounded-sm border border-cloud bg-paper px-1.5 py-0.5 text-[10px] font-medium text-slate sm:inline">
               ⌘K
@@ -133,9 +133,9 @@ export default function TopBar({ onMenu }) {
           <Link
             href="/alerts"
             aria-label="Alerts"
-            className="relative grid h-9 w-9 place-items-center rounded-sm text-ink transition-colors hover:bg-mist"
+            className="group relative grid h-9 w-9 place-items-center rounded-sm text-ink transition-colors hover:bg-mist"
           >
-            <Notification01Icon size={20} />
+            <Notification01Icon size={20} className="transition-transform duration-200 ease-out group-hover:scale-110 group-active:scale-90" />
             {unread > 0 && (
               <span className="absolute right-1.5 top-1.5 grid h-4 min-w-4 place-items-center rounded-pill bg-fail px-1 text-[10px] font-semibold leading-none text-paper">
                 {unread > 9 ? "9+" : unread}
@@ -152,9 +152,9 @@ export default function TopBar({ onMenu }) {
             <button
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
-              className="flex items-center gap-2 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-mist"
+              className="group flex items-center gap-2 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-mist"
             >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-pill bg-ink text-paper">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-pill bg-ink text-paper transition-transform duration-200 ease-out group-hover:scale-110">
                 <UserIcon size={18} />
               </span>
               <span className="hidden text-left sm:block">
