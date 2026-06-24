@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import BrandLoader from "@/app/_components/BrandLoader";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabaseClient";
 import {
@@ -120,7 +121,7 @@ export default function ResetPasswordPage() {
         <div className="w-full max-w-[440px] rounded-lg border border-cloud bg-paper p-8 shadow-[rgba(26,26,26,0.12)_0px_8px_24px] sm:p-10">
           {phase === "checking" && (
             <div className="flex flex-col items-center py-6 text-center">
-              <span className="h-7 w-7 animate-spin rounded-pill border-2 border-cloud border-t-ink" />
+              <BrandLoader size={40} />
               <p className="mt-4 text-sm text-slate">Verifying your reset link…</p>
             </div>
           )}

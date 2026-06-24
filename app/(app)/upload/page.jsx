@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import BrandLoader from "@/app/_components/BrandLoader";
 import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { useAuth } from "@/app/_components/useAuth";
@@ -328,7 +329,7 @@ function ProcessingCard({ steps, activeStep, fileName }) {
   return (
     <div className="rounded-lg border border-cloud bg-paper p-6">
       <div className="mb-5 flex items-center gap-3">
-        <span className="h-4 w-4 animate-spin rounded-pill border-2 border-cloud border-t-ink" />
+        <BrandLoader size={16} />
         <p className="font-display text-[15px] font-semibold text-ink">
           Processing {fileName || "document"}…
         </p>
@@ -348,7 +349,7 @@ function ProcessingCard({ steps, activeStep, fileName }) {
                 {done ? (
                   <CheckmarkCircle02Icon size={18} className="text-pass" />
                 ) : active ? (
-                  <span className="h-4 w-4 animate-spin rounded-pill border-2 border-cloud border-t-ink" />
+                  <BrandLoader size={16} />
                 ) : (
                   <Time02Icon size={16} className="text-slate" />
                 )}

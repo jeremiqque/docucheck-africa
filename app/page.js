@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import {
   ComputerIcon, Clock01Icon, File01Icon, Globe02Icon, SparklesIcon, ChartColumnIcon, Layers01Icon, AiMagicIcon,
   CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon, Notification01Icon, FolderLibraryIcon, UserIcon,
@@ -127,13 +130,35 @@ const PROBLEM_ICONS = [Clock01Icon, File01Icon, Globe02Icon];
 const STEP_ICONS = [CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon];
 const TAB_ICONS = [DocumentValidationIcon, DistributionIcon, Clock01Icon, File02Icon];
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function LandingPage() {
   const [menu, setMenu] = useState(false);
   const [tab, setTab] = useState(0);
   const active = TABS[tab];
+  const main = useRef(null);
+
+  useGSAP(
+    () => {
+      if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      gsap.utils.toArray("[data-animate]").forEach((sec) => {
+        const targets = sec.children.length ? Array.from(sec.children) : [sec];
+        gsap.from(targets, {
+          opacity: 0,
+          y: 28,
+          duration: 0.6,
+          ease: "power2.out",
+          stagger: 0.08,
+          scrollTrigger: { trigger: sec, start: "top 82%" },
+        });
+      });
+    },
+    { scope: main }
+  );
+
 
   return (
-    <main className="min-h-screen bg-paper text-ink">
+    <main ref={main} className="min-h-screen bg-paper text-ink">
       {/* ── NAV ── */}
       <header className="sticky top-0 z-50 border-b border-cloud bg-paper/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-5 lg:px-10">
@@ -164,7 +189,7 @@ export default function LandingPage() {
       </header>
 
       {/* ── HERO ── */}
-      <section className="mx-auto max-w-[1240px] px-5 pb-10 pt-16 text-center lg:px-10 lg:pt-24">
+      <section data-animate className="mx-auto max-w-[1240px] px-5 pb-10 pt-16 text-center lg:px-10 lg:pt-24">
         <span className="inline-flex items-center gap-2 rounded-none border border-cloud bg-paper px-4 py-1.5 text-sm text-graphite">
           <AiMagicIcon size={15} className="text-gold" /> AI compliance for African construction
         </span>
@@ -206,7 +231,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── AGENCY STRIP (marquee) ── */}
-      <section className="relative overflow-hidden border-y border-cloud bg-paper py-12">
+      <section data-animate className="relative overflow-hidden border-y border-cloud bg-paper py-12">
         <p className="micro-label text-center">Knows the rulebooks for</p>
         <div className="relative mt-8">
           <div className="flex w-max animate-marquee">
@@ -226,7 +251,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── THE PROBLEM ── */}
-      <section className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
+      <section data-animate className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
         <SectionPill icon={ComputerIcon}>The problem</SectionPill>
         <h2 className="mx-auto mt-5 max-w-[34ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
           Compliance still lives on spreadsheets until a site gets shut down.
@@ -249,7 +274,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how" className="border-t border-cloud bg-mist">
+      <section data-animate id="how" className="border-t border-cloud bg-mist">
         <div className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
           <SectionPill icon={Layers01Icon}>How it works</SectionPill>
           <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">From upload to verdict in four steps</h2>
@@ -273,7 +298,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── WHAT IT DOES (tabs) ── */}
-      <section id="features" className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
+      <section data-animate id="features" className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
         <div className="text-center">
           <SectionPill icon={SparklesIcon}>What it does</SectionPill>
           <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
@@ -330,7 +355,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── JURISDICTIONS ── */}
-      <section id="jurisdictions" className="border-t border-cloud bg-mist">
+      <section data-animate id="jurisdictions" className="border-t border-cloud bg-mist">
         <div className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
           <SectionPill icon={Globe02Icon}>Supported jurisdictions</SectionPill>
           <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">Built for Africa's regulatory reality</h2>
@@ -352,7 +377,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── BY THE NUMBERS ── */}
-      <section className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
+      <section data-animate className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
         <SectionPill icon={ChartColumnIcon}>By the numbers</SectionPill>
         <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">Tuned for accuracy, speed and scale</h2>
         <div className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4">
@@ -366,7 +391,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section id="customers" className="border-t border-cloud bg-mist">
+      <section data-animate id="customers" className="border-t border-cloud bg-mist">
         <div className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
           <div className="text-center">
             <SectionPill icon={SparklesIcon}>Testimonials</SectionPill>
@@ -395,7 +420,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="bg-gold">
+      <section data-animate className="bg-gold">
         <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-8 px-5 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-10">
           <div className="max-w-[620px]">
             <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-ink sm:text-[42px]">
@@ -418,7 +443,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t-[3px] border-gold bg-paper">
+      <footer data-animate className="border-t-[3px] border-gold bg-paper">
         <div className="mx-auto max-w-[1240px] px-5 py-16 lg:px-10">
           {/* Agency blobs flanking the central DocuCheck mark */}
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
