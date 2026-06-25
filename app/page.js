@@ -486,7 +486,7 @@ export default function LandingPage() {
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
             <img src="/landing/blob-2.svg" alt="COREN" className="h-12 w-auto object-contain" />
             <img src="/landing/blob-4.svg" alt="Nigeria" className="h-12 w-auto object-contain" />
-            <img src="/landing/logo-3d.png" alt="DocuCheck Africa" className="mx-2 h-28 w-auto object-contain sm:h-40" />
+            <img src="/landing/logo-3d.png" alt="DocuCheck Africa" className="mx-2 h-48 w-auto object-contain sm:h-72 lg:h-96" />
             <img src="/landing/blob-6.svg" alt="NHBRC" className="h-12 w-auto object-contain" />
             <img src="/landing/blob-7.svg" alt="Ghana" className="h-12 w-auto object-contain" />
             <img src="/landing/blob-5.svg" alt="South Africa" className="h-12 w-auto object-contain" />
