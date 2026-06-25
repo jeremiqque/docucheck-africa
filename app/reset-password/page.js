@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
     <main className="relative min-h-screen w-full overflow-hidden bg-mist">
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/login-bg.png')" }}
+        style={{ backgroundImage: "url('/images/login-bg.webp')" }}
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-paper/20" aria-hidden="true" />

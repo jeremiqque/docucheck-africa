@@ -136,7 +136,7 @@ export default function LoginPage() {
       {/* Full-bleed background photo (graceful fallback to bg-mist if absent) */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/login-bg.png')" }}
+        style={{ backgroundImage: "url('/images/login-bg.webp')" }}
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-paper/20" aria-hidden="true" />

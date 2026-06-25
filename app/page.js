@@ -23,12 +23,12 @@ const NAV = [
 ];
 
 const AGENCIES = [
-  { src: "/landing/agencies/lasepa.svg", alt: "LASEPA, Lagos State Environmental Protection Agency" },
-  { src: "/landing/agencies/ghana-building-code.svg", alt: "Ghana Building Code" },
-  { src: "/landing/agencies/ghana-epa.svg", alt: "Ghana Environmental Protection Agency" },
-  { src: "/landing/agencies/nesrea.svg", alt: "NESREA" },
-  { src: "/landing/agencies/sabs.svg", alt: "SABS SANS 10400" },
-  { src: "/landing/agencies/nhbrc.svg", alt: "NHBRC" },
+  { src: "/landing/agencies/lasepa.webp", alt: "LASEPA, Lagos State Environmental Protection Agency" },
+  { src: "/landing/agencies/ghana-building-code.webp", alt: "Ghana Building Code" },
+  { src: "/landing/agencies/ghana-epa.webp", alt: "Ghana Environmental Protection Agency" },
+  { src: "/landing/agencies/nesrea.webp", alt: "NESREA" },
+  { src: "/landing/agencies/sabs.webp", alt: "SABS SANS 10400" },
+  { src: "/landing/agencies/nhbrc.webp", alt: "NHBRC" },
 ];
 
 const PROBLEMS = [
@@ -276,7 +276,7 @@ export default function LandingPage() {
               <div key={g} className="flex shrink-0" aria-hidden={g === 1}>
                 {AGENCIES.map((a, i) => (
                   <div key={i} className="flex w-[200px] items-center justify-center border-l border-cloud px-6 sm:w-[240px]">
-                    <img src={a.src} alt={a.alt} className="h-16 w-auto object-contain mix-blend-multiply sm:h-20" />
+                    <img src={a.src} alt={a.alt} loading="lazy" decoding="async" className="h-16 w-auto object-contain mix-blend-multiply sm:h-20" />
                   </div>
                 ))}
               </div>
@@ -484,12 +484,12 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1240px] px-5 py-16 lg:px-10">
           {/* Agency blobs flanking the central DocuCheck mark */}
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
-            <img src="/landing/blob-2.svg" alt="COREN" className="h-12 w-auto object-contain" />
-            <img src="/landing/blob-4.svg" alt="Nigeria" className="h-12 w-auto object-contain" />
-            <img src="/landing/logo-3d.png" alt="DocuCheck Africa" className="mx-2 h-48 w-auto object-contain sm:h-72 lg:h-96" />
-            <img src="/landing/blob-6.svg" alt="NHBRC" className="h-12 w-auto object-contain" />
-            <img src="/landing/blob-7.svg" alt="Ghana" className="h-12 w-auto object-contain" />
-            <img src="/landing/blob-5.svg" alt="South Africa" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-2.svg" alt="COREN" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-4.svg" alt="Nigeria" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
+            <img src="/landing/logo-3d.webp" alt="DocuCheck Africa" loading="lazy" decoding="async" className="mx-2 h-48 w-auto object-contain sm:h-72 lg:h-96" />
+            <img src="/landing/blob-6.svg" alt="NHBRC" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-7.svg" alt="Ghana" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
+            <img src="/landing/blob-5.svg" alt="South Africa" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
           </div>
           {/* Brand + copyright */}
           <div className="mt-12 flex flex-col gap-4 border-t border-cloud pt-8 sm:flex-row sm:items-end sm:justify-between">
