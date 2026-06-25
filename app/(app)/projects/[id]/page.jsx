@@ -12,6 +12,8 @@ import {
   CancelCircleIcon,
   Time02Icon,
   Add01Icon,
+  CloudUploadIcon,
+  Delete02Icon,
   ArrowLeft01Icon,
   DocumentValidationIcon,
 } from "@/app/_components/icons";
@@ -37,6 +39,7 @@ export default function ProjectDetailPage() {
   const [report, setReport] = useState(null);
   const [audit, setAudit] = useState([]);
   const [tab, setTab] = useState("pre");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [narrative, setNarrative] = useState("");
   const [genLoading, setGenLoading] = useState(false);
@@ -71,7 +74,21 @@ export default function ProjectDetailPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, refreshKey]);
+
+  async function handleDeleteDoc(docId) {
+    if (!window.confirm("Delete this uploaded document? This cannot be undone.")) return;
+    try {
+      const res = await apiFetch(`/api/documents?id=${docId}`, { method: "DELETE" });
+      if (res.ok) setRefreshKey((k) => k + 1);
+      else {
+        const d = await res.json().catch(() => ({}));
+        alert(d.error || "Could not delete the document.");
+      }
+    } catch {
+      alert("Network error while deleting.");
+    }
+  }
 
   async function generateReport() {
     setGenError("");
@@ -215,6 +232,7 @@ export default function ProjectDetailPage() {
             title={`Pre-Construction Checklist (${jurisdictionLabel})`}
             items={preItems}
             docsById={docsById}
+            onDelete={handleDeleteDoc}
           />
         )}
         {tab === "post" && (
@@ -222,6 +240,7 @@ export default function ProjectDetailPage() {
             title={`Post-Construction Checklist (${jurisdictionLabel})`}
             items={postItems}
             docsById={docsById}
+            onDelete={handleDeleteDoc}
           />
         )}
         {tab === "audit" && <AuditTrail logs={audit} />}
@@ -257,7 +276,7 @@ function StatusCircle({ verdict }) {
   );
 }
 
-function ChecklistGroup({ title, items, docsById }) {
+function ChecklistGroup({ title, items, docsById, onDelete }) {
   if (!items.length) {
     return (
       <div className="rounded-md border border-cloud bg-paper px-6 py-10 text-center text-sm text-slate">
@@ -298,6 +317,25 @@ function ChecklistGroup({ title, items, docsById }) {
                 <p className="truncate text-xs text-slate">{sub}</p>
               </div>
               <VerdictBadge verdict={verdict} />
+              <Link
+                href={`/upload?project=${item.project_id}&phase=${item.phase}&type=${item.document_type}`}
+                title={doc ? "Re-upload document" : "Upload this document"}
+                aria-label="Upload this document"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-cloud text-ink transition-colors hover:border-ink hover:bg-mist"
+              >
+                <CloudUploadIcon size={18} />
+              </Link>
+              {doc && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(doc.id)}
+                  title="Delete document"
+                  aria-label="Delete document"
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-cloud text-fail transition-colors hover:border-fail hover:bg-fail-wash"
+                >
+                  <Delete02Icon size={18} />
+                </button>
+              )}
             </div>
           );
         })}

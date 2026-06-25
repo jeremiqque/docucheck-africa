@@ -34,7 +34,7 @@ const AGENCIES = [
 const PROBLEMS = [
   ["One lapse halts everything", "A single expired certificate can stop an entire project. Manual tracking means you find out far too late to act."],
   ["Nothing covers the full lifecycle", "No single tool follows a project from pre-construction permits all the way to post-construction handover."],
-  ["Built for everywhere but here", "COREN, NHBRC, EPA Ghana, no existing AI tool encodes these African frameworks. So they get checked by hand, or not at all."],
+  ["Built for everywhere but here", "No existing AI tool encodes COREN, NHBRC, or EPA Ghana, so they get checked by hand, or not at all."],
 ];
 
 const STEPS = [
@@ -48,7 +48,7 @@ const TABS = [
   {
     key: "Read & classify",
     title: "It reads the document so you don't have to",
-    body: "Upload a scan or a phone photo and the document is transcribed, sorted into the right category, and stripped down to the eight fields that matter.",
+    body: "Upload a scan or phone photo. It's transcribed, categorised, and reduced to the eight fields that matter.",
     points: [
       "Classifies into 8 document types automatically",
       "Works on poor-lighting field photos",
@@ -108,7 +108,7 @@ const TESTIMONIALS = [
   {
     tag: "Crisis avoided",
     icon: ShieldIcon,
-    quote: "An expired COREN cert shut us down for a week once. Now the alerts reach me 90 days out it never becomes a problem on site anymore.",
+    quote: "An expired COREN cert shut us down for a week once. Now the alerts reach me 90 days out, so it never becomes a problem on site.",
     name: "Adebayo Okonkwo",
     role: "Project Manager · Lagos, Nigeria",
   },
@@ -238,7 +238,7 @@ export default function LandingPage() {
           <Typewriter />
         </p>
         <p className="mx-auto mt-5 max-w-[62ch] text-base leading-relaxed text-graphite">
-          Upload any compliance document. DocuCheck reads it, checks it against the rules in Nigeria, Ghana and South Africa, and hands you a clear verdict in under 30 seconds.
+          Upload any compliance document. DocuCheck checks it against the rules in Nigeria, Ghana and South Africa and returns a clear verdict in under 30 seconds.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link href="/login" className="inline-flex w-full items-center justify-center group gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110 sm:w-auto">
@@ -294,7 +294,7 @@ export default function LandingPage() {
           Compliance still lives on spreadsheets until a site gets shut down.
         </h2>
         <p className="mx-auto mt-4 max-w-[60ch] text-base text-graphite">
-          Permits expire quietly. The gap surfaces during an inspection, not before it. Here's what teams are up against today.
+          Permits expire quietly. The gap shows up at inspection, not before.
         </p>
         <div className="mt-12 grid grid-cols-1 gap-5 text-left md:grid-cols-3">
           {PROBLEMS.map(([t, d], i) => {
@@ -464,7 +464,7 @@ export default function LandingPage() {
               Stop chasing certificates. Start trusting the verdict.
             </h2>
             <p className="mt-4 text-base text-ink/80">
-              Join the construction teams across Africa verifying documents automatically and sleeping better before inspections.
+              Join construction teams across Africa verifying documents automatically, ahead of every inspection.
             </p>
             <p className="mt-3 text-sm font-medium text-ink/70">Free to try. No credit card needed.</p>
           </div>

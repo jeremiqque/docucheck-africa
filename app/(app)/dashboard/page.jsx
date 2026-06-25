@@ -90,11 +90,11 @@ export default function DashboardPage() {
           <p className="mt-1 text-sm text-slate">Compliance overview across all your projects</p>
         </div>
         <Link
-          href="/upload"
+          href="/projects/new"
           className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-black"
         >
           <Add01Icon size={18} />
-          Upload document
+          Create project
         </Link>
       </div>
 

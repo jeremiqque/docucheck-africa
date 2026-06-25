@@ -33,6 +33,7 @@ export async function POST(request) {
     const projectId = formData.get("project_id");
     const jurisdiction = formData.get("jurisdiction");
     const phase = formData.get("phase") || "pre_construction";
+    const targetType = formData.get("target_type");
     const userEmail = formData.get("user_email");
 
     // Validate inputs
@@ -96,6 +97,7 @@ export async function POST(request) {
 
     // ── Step 5: Classify document ──────────────────────────
     const classification = await classifyDocument(ocrResult.text);
+    const docType = targetType || classification.document_type;
 
     // ── Step 6: Extract data fields ────────────────────────
     const fields = await extractFields(
@@ -116,7 +118,7 @@ export async function POST(request) {
         project_id: projectId,
         file_name: file.name,
         file_url: fileUrl,
-        document_type: classification.document_type,
+        document_type: docType,
         status: "verified",
         extracted_fields: fields,
         verdict: complianceResult.verdict,
@@ -142,7 +144,7 @@ export async function POST(request) {
         document_id: document.id,
       })
       .eq("project_id", projectId)
-      .eq("document_type", classification.document_type);
+      .eq("document_type", docType);
 
     // Write to audit log
     await supabase.from("audit_logs").insert({
@@ -251,5 +253,36 @@ export async function GET(request) {
       { error: "Internal server error" },
       { status: 500 }
     );
+  }
+}
+
+
+// DELETE /api/documents?id=xxx
+// Removes an uploaded document and resets its checklist item to pending.
+export async function DELETE(request) {
+  try {
+    const __token = getBearerToken(request);
+    if (!__token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = getSupabaseForToken(__token);
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "Document id is required" }, { status: 400 });
+
+    await supabase
+      .from("compliance_checklist")
+      .update({ status: "pending", document_id: null })
+      .eq("document_id", id);
+
+    await supabase.from("alerts").delete().eq("document_id", id);
+    await supabase.from("audit_logs").delete().eq("document_id", id);
+
+    const { error } = await supabase.from("documents").delete().eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("DELETE document error:", error.message);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

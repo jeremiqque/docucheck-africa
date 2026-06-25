@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useAuth } from "@/app/_components/useAuth";
 import Select from "@/app/_components/Select";
 import { titleCase } from "@/app/_components/project-ui";
+import requirementsMatrix from "@/data/requirementsMatrix.json";
 import {
   CloudUploadIcon,
   CheckmarkCircle02Icon,
@@ -51,6 +52,8 @@ export default function UploadPage() {
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectId, setProjectId] = useState("");
   const [phase, setPhase] = useState("pre_construction");
+  const [targetType, setTargetType] = useState("");
+  const [docType, setDocType] = useState("");
 
   const [status, setStatus] = useState("idle"); // idle | processing | done | error
   const [activeStep, setActiveStep] = useState(-1);
@@ -67,7 +70,15 @@ export default function UploadPage() {
         if (!active) return;
         const projs = res.ok ? data.projects ?? [] : [];
         setProjects(projs);
-        if (projs.length) setProjectId(projs[0].id);
+        const params = new URLSearchParams(window.location.search);
+        const pProject = params.get("project");
+        const pPhase = params.get("phase");
+        const pType = params.get("type");
+        if (projs.length) {
+          setProjectId(pProject && projs.some((p) => p.id === pProject) ? pProject : projs[0].id);
+        }
+        if (pPhase === "pre_construction" || pPhase === "post_construction") setPhase(pPhase);
+        if (pType) setTargetType(pType);
       } catch {
         /* ignore */
       } finally {
@@ -81,6 +92,24 @@ export default function UploadPage() {
   }, []);
 
   const selectedProject = projects.find((p) => p.id === projectId);
+  const docOptions = (requirementsMatrix[selectedProject?.jurisdiction]?.[phase] || []).map((d) => ({
+    value: d.document_type,
+    label: d.label || titleCase(d.document_type),
+  }));
+
+  useEffect(() => {
+    const opts = requirementsMatrix[selectedProject?.jurisdiction]?.[phase] || [];
+    if (!opts.length) {
+      setDocType("");
+      return;
+    }
+    setDocType((cur) => {
+      if (cur && opts.some((o) => o.document_type === cur)) return cur;
+      if (targetType && opts.some((o) => o.document_type === targetType)) return targetType;
+      return opts[0].document_type;
+    });
+  }, [projectId, phase, targetType, projects]);
+
 
   function validate(file) {
     const ext = "." + file.name.split(".").pop().toLowerCase();
@@ -120,6 +149,7 @@ export default function UploadPage() {
       fd.append("project_id", projectId);
       fd.append("jurisdiction", selectedProject?.jurisdiction ?? "");
       fd.append("phase", phase);
+      fd.append("target_type", docType);
       if (user?.email) fd.append("user_email", user.email);
 
       const res = await apiFetch("/api/documents", { method: "POST", body: fd });
@@ -247,6 +277,15 @@ export default function UploadPage() {
                 className="mb-4"
               />
 
+              <Select
+                label="Document"
+                value={docType}
+                onChange={setDocType}
+                disabled={status === "processing" || !docOptions.length}
+                options={docOptions}
+                className="mb-4"
+              />
+
               <div className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-graphite">Jurisdiction</span>
                 <p className="rounded-sm border border-cloud bg-mist px-3 py-2.5 text-sm capitalize text-slate">
@@ -259,8 +298,8 @@ export default function UploadPage() {
             <div className="rounded-md border border-cloud bg-mist p-4">
               <p className="text-[13px] font-medium text-ink">How it works</p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate">
-                Your document is processed through a 9-step AI pipeline (AWS Textract for OCR and
-                GPT for classification and field extraction), then checked against the compliance
+                Your document is processed through a 9-step AI pipeline (vision OCR and
+                language models for classification and field extraction), then checked against the compliance
                 rules for the project&apos;s jurisdiction. Results appear in under 30 seconds.
               </p>
             </div>
