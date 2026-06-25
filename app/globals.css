@@ -34,10 +34,10 @@
   --font-sans: var(--font-normal), "Inter", system-ui, sans-serif;
 
   /* ── Border radius ── */
-  --radius-sm: 8px; /* inputs, small chips, images */
-  --radius-md: 12px; /* cards, surfaces, buttons */
-  --radius-lg: 16px; /* modals, large panels */
-  --radius-pill: 9999px; /* tags, badges, status chips, avatars */
+  --radius-sm: 0px; /* squared: no curved edges */
+  --radius-md: 0px; /* squared: no curved edges */
+  --radius-lg: 0px; /* squared: no curved edges */
+  --radius-pill: 0px; /* squared: no curved edges */
 }
 
 :root {
