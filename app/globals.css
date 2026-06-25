@@ -93,3 +93,11 @@ h4 {
 /* Smooth in-page navigation + offset for the sticky nav */
 html { scroll-behavior: smooth; }
 section[id] { scroll-margin-top: 5rem; }
+
+/* Tab panel crossfade */
+@keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.animate-fadein { animation: fadein 0.35s ease both; }
+
+/* Typewriter cursor */
+@keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+.animate-blink { animation: blink 1s step-end infinite; }

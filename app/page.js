@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,7 +9,10 @@ import {
   ComputerIcon, Clock01Icon, File01Icon, Globe02Icon, SparklesIcon, ChartColumnIcon, Layers01Icon, AiMagicIcon,
   CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon, Notification01Icon, FolderLibraryIcon, UserIcon,
   DocumentValidationIcon, DistributionIcon, File02Icon, ShieldIcon,
+  CheckmarkSquare01Icon,
 } from "@/app/_components/icons";
+
+const HERO_PHRASES = ["Catch it first.", "Fix it before inspection.", "Know before you build.", "Verify in seconds."];
 
 const NAV = [
   ["How it works", "#how"],
@@ -152,6 +155,26 @@ export default function LandingPage() {
           scrollTrigger: { trigger: sec, start: "top 82%" },
         });
       });
+
+      gsap.utils.toArray(".stat-value").forEach((el) => {
+        const raw = el.getAttribute("data-value") || "";
+        const m = raw.match(/^(\D*)(\d+)(\D*)$/);
+        if (!m) return;
+        const pre = m[1];
+        const num = Number(m[2]);
+        const suf = m[3];
+        const obj = { v: 0 };
+        el.textContent = pre + "0" + suf;
+        gsap.to(obj, {
+          v: num,
+          duration: 1.3,
+          ease: "power1.out",
+          scrollTrigger: { trigger: el, start: "top 90%" },
+          onUpdate: () => {
+            el.textContent = pre + Math.round(obj.v) + suf;
+          },
+        });
+      });
     },
     { scope: main }
   );
@@ -170,9 +193,9 @@ export default function LandingPage() {
               <a key={l} href={h} className="transition-colors hover:text-ink">{l}</a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden text-[15px] font-medium text-ink hover:opacity-70 sm:block">Log in</Link>
-            <Link href="/login" className="rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-5 py-2 text-sm font-medium text-paper transition-[filter] hover:brightness-110">Start free</Link>
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="hidden rounded-none border border-ink bg-paper px-5 py-2 text-sm font-medium text-ink transition-colors hover:bg-mist md:block">Log in</Link>
+            <Link href="/login" className="hidden md:block rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-5 py-2 text-sm font-medium text-paper transition-[filter] hover:brightness-110">Start free</Link>
             <button type="button" onClick={() => setMenu((o) => !o)} aria-label="Menu" className="grid h-9 w-9 place-items-center rounded-none text-ink hover:bg-mist md:hidden">
               <span className="text-xl leading-none">{menu ? "✕" : "☰"}</span>
             </button>
@@ -182,30 +205,42 @@ export default function LandingPage() {
           <div className="border-t border-cloud bg-paper px-5 py-4 md:hidden">
             <nav className="flex flex-col gap-3 text-[15px] text-graphite">
               {NAV.map(([l, h]) => <a key={l} href={h} onClick={() => setMenu(false)}>{l}</a>)}
-              <Link href="/login" onClick={() => setMenu(false)} className="text-ink">Log in</Link>
+              <Link
+                href="/login"
+                onClick={() => setMenu(false)}
+                className="mt-2 flex w-full items-center justify-between rounded-none border border-ink bg-paper px-5 py-3 text-sm font-medium text-ink transition-colors hover:bg-mist"
+              >
+                Log in <span aria-hidden="true">&rsaquo;</span>
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setMenu(false)}
+                className="flex w-full items-center justify-between rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] px-5 py-3 text-sm font-medium text-paper"
+              >
+                Start free <span aria-hidden="true">&rsaquo;</span>
+              </Link>
             </nav>
           </div>
         )}
       </header>
 
       {/* ── HERO ── */}
-      <section data-animate className="mx-auto max-w-[1240px] px-5 pb-10 pt-16 text-center lg:px-10 lg:pt-24">
+      <section data-animate className="mx-auto max-w-[1240px] px-5 pb-8 pt-12 text-center lg:px-10 lg:pt-16">
         <span className="inline-flex items-center gap-2 rounded-none border border-cloud bg-paper px-4 py-1.5 text-sm text-graphite">
           <AiMagicIcon size={15} className="text-gold" /> AI compliance for African construction
         </span>
-        <h1 className="mx-auto mt-7 max-w-[18ch] font-display text-[48px] font-bold leading-[1.02] tracking-tight sm:text-[64px]">
+        <h1 className="mx-auto mt-7 max-w-[18ch] font-display text-[34px] font-bold leading-[1.05] tracking-tight sm:text-[50px]">
           One expired permit can shut your whole site.
         </h1>
-        <p className="relative mx-auto mt-3 inline-block">
-          <span className="absolute inset-x-[-6px] bottom-1 top-2 -z-0 -rotate-1 rounded-none bg-gold" aria-hidden="true" />
-          <span className="relative font-display text-[36px] font-bold tracking-tight text-ink sm:text-[48px]">Catch it first.</span>
+        <p className="relative mx-auto mt-3 inline-block min-w-[6ch]">
+          <Typewriter />
         </p>
-        <p className="mx-auto mt-7 max-w-[62ch] text-xl leading-relaxed text-graphite">
+        <p className="mx-auto mt-5 max-w-[62ch] text-base leading-relaxed text-graphite">
           Upload any compliance document. DocuCheck reads it, checks it against the rules in Nigeria, Ghana and South Africa, and hands you a clear verdict in under 30 seconds.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href="/login" className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110 sm:w-auto">
-            Verify a document free <span aria-hidden="true">&rarr;</span>
+          <Link href="/login" className="inline-flex w-full items-center justify-center group gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110 sm:w-auto">
+            Verify a document free <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
           </Link>
           <a href="#how" className="inline-flex w-full items-center justify-center rounded-none border border-ink px-6 py-3 text-base font-medium text-ink transition-colors hover:bg-mist sm:w-auto">
             See how it works
@@ -215,9 +250,9 @@ export default function LandingPage() {
         <p className="mt-6 text-sm text-slate">Trusted by site teams &amp; compliance officers across three markets</p>
 
         {/* product preview (video) */}
-        <div className="mx-auto mt-14 w-full max-w-[1240px] overflow-hidden rounded-none border border-cloud bg-mist shadow-[rgba(26,26,26,0.12)_0px_30px_70px]">
+        <div className="mx-auto mt-10 w-full max-w-[1240px] overflow-hidden rounded-none border border-cloud bg-mist shadow-[rgba(26,26,26,0.12)_0px_30px_70px]">
           <video
-            className="h-auto w-full"
+            className="aspect-video w-full object-cover"
             autoPlay
             muted
             loop
@@ -253,17 +288,17 @@ export default function LandingPage() {
       {/* ── THE PROBLEM ── */}
       <section data-animate className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
         <SectionPill icon={ComputerIcon}>The problem</SectionPill>
-        <h2 className="mx-auto mt-5 max-w-[34ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
+        <h2 className="mx-auto mt-5 max-w-[34ch] font-display text-[32px] font-bold leading-tight tracking-tight">
           Compliance still lives on spreadsheets until a site gets shut down.
         </h2>
-        <p className="mx-auto mt-4 max-w-[60ch] text-lg text-graphite">
+        <p className="mx-auto mt-4 max-w-[60ch] text-base text-graphite">
           Permits expire quietly. The gap surfaces during an inspection, not before it. Here's what teams are up against today.
         </p>
         <div className="mt-12 grid grid-cols-1 gap-5 text-left md:grid-cols-3">
           {PROBLEMS.map(([t, d], i) => {
             const Icon = PROBLEM_ICONS[i];
             return (
-              <div key={t} className="rounded-none border border-cloud bg-paper p-7">
+              <div key={t} className="rounded-none border border-cloud bg-paper p-7 transition-all duration-200 hover:-translate-y-1 hover:border-ink">
                 <Icon size={26} className="text-ink" />
                 <h3 className="mt-5 font-display text-xl font-semibold">{t}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-slate">{d}</p>
@@ -277,13 +312,13 @@ export default function LandingPage() {
       <section data-animate id="how" className="border-t border-cloud bg-mist">
         <div className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
           <SectionPill icon={Layers01Icon}>How it works</SectionPill>
-          <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">From upload to verdict in four steps</h2>
-          <p className="mx-auto mt-4 max-w-[58ch] text-lg text-graphite">Drop in a document and the pipeline handles the rest. No setup, no manual data entry.</p>
+          <h2 className="mt-5 font-display text-[32px] font-bold leading-tight tracking-tight">From upload to verdict in four steps</h2>
+          <p className="mx-auto mt-4 max-w-[58ch] text-base text-graphite">Drop in a document and the pipeline handles the rest. No setup, no manual data entry.</p>
           <div className="mt-12 grid grid-cols-1 gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map(([t, d], i) => {
               const Icon = STEP_ICONS[i];
               return (
-                <div key={t} className="rounded-none border border-cloud bg-paper p-6">
+                <div key={t} className="rounded-none border border-cloud bg-paper p-6 transition-all duration-200 hover:-translate-y-1 hover:border-ink">
                   <div className="flex items-center justify-between">
                     <Icon size={24} className="text-ink" />
                     <span className="font-display text-sm font-bold text-slate">0{i + 1}</span>
@@ -301,10 +336,10 @@ export default function LandingPage() {
       <section data-animate id="features" className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
         <div className="text-center">
           <SectionPill icon={SparklesIcon}>What it does</SectionPill>
-          <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
+          <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[32px] font-bold leading-tight tracking-tight">
             Everything that keeps a project clearance-ready, in one place.
           </h2>
-          <p className="mx-auto mt-4 max-w-[60ch] text-lg text-graphite">
+          <p className="mx-auto mt-4 max-w-[60ch] text-base text-graphite">
             Pre and post construction. Three jurisdictions. One system that actually understands the documents.
           </p>
         </div>
@@ -325,14 +360,14 @@ export default function LandingPage() {
             })}
           </div>
         </div>
-        <div className="mt-8 grid grid-cols-1 items-center gap-8 rounded-none border border-cloud bg-mist p-7 sm:p-10 lg:grid-cols-2">
+        <div key={tab} className="mt-8 grid grid-cols-1 items-center gap-8 rounded-none border border-cloud bg-mist p-7 sm:p-10 lg:grid-cols-2 animate-fadein">
           <div>
             <h3 className="font-display text-[26px] font-bold tracking-tight">{active.title}</h3>
-            <p className="mt-3 text-lg leading-relaxed text-graphite">{active.body}</p>
+            <p className="mt-3 text-base leading-relaxed text-graphite">{active.body}</p>
             <ul className="mt-6 space-y-3">
               {active.points.map((p) => (
                 <li key={p} className="flex items-start gap-2.5 text-graphite">
-                  <span className="mt-0.5 text-pass">&#10003;</span> {p}
+                  <CheckmarkSquare01Icon size={18} className="mt-0.5 shrink-0 text-pass" /> {p}
                 </li>
               ))}
             </ul>
@@ -358,11 +393,11 @@ export default function LandingPage() {
       <section data-animate id="jurisdictions" className="border-t border-cloud bg-mist">
         <div className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
           <SectionPill icon={Globe02Icon}>Supported jurisdictions</SectionPill>
-          <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">Built for Africa's regulatory reality</h2>
-          <p className="mx-auto mt-4 max-w-[62ch] text-lg text-graphite">DocuCheck ships knowing the specific frameworks of three markets, no configuration required.</p>
+          <h2 className="mt-5 font-display text-[32px] font-bold leading-tight tracking-tight">Built for Africa's regulatory reality</h2>
+          <p className="mx-auto mt-4 max-w-[62ch] text-base text-graphite">DocuCheck ships knowing the specific frameworks of three markets, no configuration required.</p>
           <div className="mt-12 grid grid-cols-1 gap-5 text-left md:grid-cols-3">
             {JURISDICTIONS.map(([name, body, tags]) => (
-              <div key={name} className="rounded-none border border-cloud bg-paper p-7">
+              <div key={name} className="rounded-none border border-cloud bg-paper p-7 transition-all duration-200 hover:-translate-y-1 hover:border-ink">
                 <h3 className="font-display text-xl font-semibold">{name}</h3>
                 <p className="mt-3 text-[15px] leading-relaxed text-slate">{body}</p>
                 <div className="mt-5 flex flex-wrap gap-2">
@@ -379,11 +414,11 @@ export default function LandingPage() {
       {/* ── BY THE NUMBERS ── */}
       <section data-animate className="mx-auto max-w-[1240px] px-5 py-24 text-center lg:px-10">
         <SectionPill icon={ChartColumnIcon}>By the numbers</SectionPill>
-        <h2 className="mt-5 font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">Tuned for accuracy, speed and scale</h2>
+        <h2 className="mt-5 font-display text-[32px] font-bold leading-tight tracking-tight">Tuned for accuracy, speed and scale</h2>
         <div className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4">
           {STATS.map(([v, l]) => (
             <div key={l}>
-              <p className="font-display text-[48px] font-bold leading-none text-ink">{v}</p>
+              <p data-value={v} className="stat-value font-display text-[48px] font-bold leading-none text-ink">{v}</p>
               <p className="mt-3 text-sm text-slate">{l}</p>
             </div>
           ))}
@@ -395,7 +430,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1240px] px-5 py-24 lg:px-10">
           <div className="text-center">
             <SectionPill icon={SparklesIcon}>Testimonials</SectionPill>
-            <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[34px] font-bold leading-tight tracking-tight sm:text-[44px]">
+            <h2 className="mx-auto mt-5 max-w-[32ch] font-display text-[32px] font-bold leading-tight tracking-tight">
               The people doing the work, on what changed
             </h2>
           </div>
@@ -403,7 +438,7 @@ export default function LandingPage() {
             {TESTIMONIALS.map((t) => {
               const Icon = t.icon;
               return (
-                <figure key={t.name} className="flex flex-col border border-cloud bg-paper p-7">
+                <figure key={t.name} className="flex flex-col border border-cloud bg-paper p-7 transition-all duration-200 hover:-translate-y-1 hover:border-ink">
                   <span className="inline-flex w-fit items-center gap-1.5 bg-pass-wash px-2.5 py-1 text-xs font-medium text-pass">
                     <Icon size={14} /> {t.tag}
                   </span>
@@ -423,17 +458,17 @@ export default function LandingPage() {
       <section data-animate className="bg-gold">
         <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-8 px-5 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-10">
           <div className="max-w-[620px]">
-            <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-ink sm:text-[42px]">
+            <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-ink">
               Stop chasing certificates. Start trusting the verdict.
             </h2>
-            <p className="mt-4 text-lg text-ink/80">
+            <p className="mt-4 text-base text-ink/80">
               Join the construction teams across Africa verifying documents automatically and sleeping better before inspections.
             </p>
             <p className="mt-3 text-sm font-medium text-ink/70">Free to try. No credit card needed.</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110">
-              Verify a document free <span aria-hidden="true">&rarr;</span>
+            <Link href="/login" className="inline-flex items-center justify-center group gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110">
+              Verify a document free <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
             </Link>
             <a href="mailto:support@jeremiahalalade.me" className="inline-flex items-center justify-center rounded-none border border-ink px-6 py-3 text-base font-medium text-ink transition-colors hover:bg-gold-deep">
               Book a demo
@@ -470,6 +505,42 @@ export default function LandingPage() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function Typewriter() {
+  const [text, setText] = useState(HERO_PHRASES[0]);
+  const [i, setI] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const current = HERO_PHRASES[i];
+    let delay = deleting ? 45 : 95;
+    if (!deleting && text === current) delay = 1500;
+    else if (deleting && text === "") delay = 350;
+    const t = setTimeout(() => {
+      if (!deleting && text === current) {
+        setDeleting(true);
+      } else if (deleting && text === "") {
+        setDeleting(false);
+        setI((prev) => (prev + 1) % HERO_PHRASES.length);
+      } else {
+        setText(deleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1));
+      }
+    }, delay);
+    return () => clearTimeout(t);
+  }, [text, deleting, i]);
+
+  return (
+    <>
+      <span className="sr-only">Catch it first.</span>
+      <span aria-hidden="true" className="absolute inset-x-[-6px] bottom-1 top-2 -z-0 -rotate-1 rounded-none bg-gold" />
+      <span aria-hidden="true" className="relative font-display text-[26px] font-bold tracking-tight text-ink sm:text-[38px]">
+        {text}
+        <span className="ml-0.5 inline-block h-[0.85em] w-[3px] translate-y-[2px] animate-blink bg-ink align-baseline" />
+      </span>
+    </>
   );
 }
 
