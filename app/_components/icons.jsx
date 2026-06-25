@@ -62,3 +62,4 @@ export const DistributionIcon = makeIcon("DistributionIcon");
 export const File02Icon = makeIcon("File02Icon");
 export const ShieldIcon = makeIcon("ShieldIcon");
 export const CheckmarkSquare01Icon = makeIcon("CheckmarkSquare01Icon");
+export const HardHatIcon = makeIcon("HardHatIcon");

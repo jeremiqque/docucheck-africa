@@ -10,6 +10,7 @@ import {
   CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon, Notification01Icon, FolderLibraryIcon, UserIcon,
   DocumentValidationIcon, DistributionIcon, File02Icon, ShieldIcon,
   CheckmarkSquare01Icon,
+  HardHatIcon,
 } from "@/app/_components/icons";
 
 const HERO_PHRASES = ["Catch it first.", "Fix it before inspection.", "Know before you build.", "Verify in seconds."];
@@ -182,6 +183,7 @@ export default function LandingPage() {
 
   return (
     <main ref={main} className="min-h-screen bg-paper text-ink">
+      <CursorFollower />
       {/* ── NAV ── */}
       <header className="sticky top-0 z-50 border-b border-cloud bg-paper/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-5 lg:px-10">
@@ -541,6 +543,40 @@ function Typewriter() {
         <span className="ml-0.5 inline-block h-[0.85em] w-[3px] translate-y-[2px] animate-blink bg-ink align-baseline" />
       </span>
     </>
+  );
+}
+
+function CursorFollower() {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia("(pointer: fine)").matches) return;
+    setOn(true);
+    const move = (e) => {
+      const el = ref.current;
+      if (el) el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    };
+    const down = () => { const el = ref.current; if (el) el.style.setProperty("--cs", "0.8"); };
+    const up = () => { const el = ref.current; if (el) el.style.setProperty("--cs", "1"); };
+    document.documentElement.classList.add("cursor-none");
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mousedown", down);
+    window.addEventListener("mouseup", up);
+    return () => {
+      document.documentElement.classList.remove("cursor-none");
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mousedown", down);
+      window.removeEventListener("mouseup", up);
+    };
+  }, []);
+
+  return (
+    <div ref={ref} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[100]" style={{ willChange: "transform", opacity: on ? 1 : 0 }}>
+      <span className="block transition-transform duration-150 ease-out [transform:translate(-50%,-50%)_scale(var(--cs,1))]">
+        <HardHatIcon size={28} className="text-ink drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" />
+      </span>
+    </div>
   );
 }
 

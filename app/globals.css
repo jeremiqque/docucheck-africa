@@ -101,3 +101,6 @@ section[id] { scroll-margin-top: 5rem; }
 /* Typewriter cursor */
 @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
 .animate-blink { animation: blink 1s step-end infinite; }
+
+/* Custom construction cursor (landing) */
+.cursor-none, .cursor-none * { cursor: none !important; }
