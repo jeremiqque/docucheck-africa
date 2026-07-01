@@ -136,6 +136,238 @@ const TAB_ICONS = [DocumentValidationIcon, DistributionIcon, Clock01Icon, File02
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* Animated preview panel for the "What it does" tabs. Rebuilds its GSAP
+   timeline whenever the tab changes (the parent remounts it via key={tab}). */
+function TabPreview({ tab, card }) {
+  const root = useRef(null);
+  const tlRef = useRef(null);
+
+  useGSAP(
+    () => {
+      if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const el = root.current;
+      const tl = gsap.timeline({
+        defaults: { ease: "back.out(1.7)" },
+        repeat: -1,
+        repeatDelay: 1.6,
+        scrollTrigger: { trigger: el, start: "top 82%", toggleActions: "play pause resume pause" },
+      });
+      tlRef.current = tl;
+
+      if (tab === 0) {
+        gsap.set(".p0-scan", { yPercent: -110, opacity: 0 });
+        tl.from(".p0-doc", { y: -26, opacity: 0, duration: 0.3 })
+          .to(".p0-scan", { opacity: 1, duration: 0.12 }, "<")
+          .to(".p0-scan", { yPercent: 320, duration: 0.65, ease: "power1.inOut" })
+          .to(".p0-scan", { opacity: 0, duration: 0.18 }, "<+0.45")
+          .from(".p0-field", { y: 12, opacity: 0, scale: 0.94, duration: 0.26, stagger: 0.09 }, "-=0.25");
+        const meter = el.querySelector(".p0-meter");
+        if (meter) {
+          const o = { v: 0 };
+          tl.to(o, { v: 98, duration: 0.5, ease: "power1.out", onUpdate: () => { meter.textContent = Math.round(o.v) + "% match"; } }, "-=0.1");
+        }
+      } else if (tab === 1) {
+        tl.from(".p1-rule", { x: -14, opacity: 0, duration: 0.22, stagger: 0.09, ease: "power2.out" })
+          .from(".p1-tick", { scale: 0, duration: 0.24, stagger: 0.09, ease: "back.out(3)" }, "-=0.55")
+          .from(".p1-verdict", { scale: 1.7, opacity: 0, rotate: -8, duration: 0.34, ease: "back.out(2)" }, "+=0.05");
+      } else if (tab === 2) {
+        const days = el.querySelector(".p2-days");
+        const o = { v: 90 };
+        gsap.set(".p2-bar", { scaleX: 1, transformOrigin: "left center" });
+        tl.to(o, { v: 30, duration: 0.95, ease: "steps(2)", onUpdate: () => { if (days) days.textContent = Math.round(o.v); } })
+          .to(".p2-bar", { scaleX: 0.33, duration: 0.95, ease: "steps(2)" }, "<")
+          .from(".p2-alert", { x: 26, opacity: 0, duration: 0.32 }, "+=0.05")
+          .to(".p2-alert", { keyframes: { x: [0, -5, 5, -3, 0] }, duration: 0.3, ease: "power1.inOut" });
+      } else {
+        gsap.set(".p3-doc", { rotate: (i) => (i - 1.5) * 7, transformOrigin: "bottom center" });
+        tl.from(".p3-doc", { y: -26, opacity: 0, duration: 0.3, stagger: 0.09 });
+        const cnt = el.querySelector(".p3-count");
+        if (cnt) {
+          const o = { v: 0 };
+          tl.to(o, { v: 12, duration: 0.5, ease: "power1.out", onUpdate: () => { cnt.textContent = Math.round(o.v); } }, "-=0.15");
+        }
+        tl.from(".p3-ready", { scale: 0.4, opacity: 0, duration: 0.34 }, "-=0.05");
+      }
+
+      tl.from(".tp-status", { scale: 0.4, opacity: 0, duration: 0.32 }, "-=0.15");
+    },
+    { scope: root, dependencies: [tab] }
+  );
+
+  const FIELDS = [
+    ["Document type", "Contractor licence"],
+    ["Issue date", "12 Mar 2024"],
+    ["Expiry date", "14 Mar 2027"],
+    ["Issuing authority", "COREN"],
+  ];
+  const RULES = [
+    "Expiry date valid",
+    "Mandatory fields present",
+    "Issuing authority verified",
+    "Jurisdiction aligned",
+    "Issue date not future",
+    "Date sequence valid",
+  ];
+
+  return (
+    <div
+      ref={root}
+      onMouseEnter={() => tlRef.current && tlRef.current.restart()}
+      className="group overflow-hidden rounded-none border border-cloud bg-paper shadow-[0_1px_2px_rgba(26,26,26,0.04)] transition-[transform,box-shadow] duration-300 will-change-transform hover:-translate-y-1.5 hover:shadow-[0_18px_40px_rgba(26,26,26,0.12)]"
+    >
+      {/* window chrome */}
+      <div className="flex items-center gap-1.5 border-b border-cloud bg-mist px-3.5 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
+        <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
+        <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
+        <span className="ml-2 text-[10px] font-medium tracking-wide text-slate">DocuCheck</span>
+        <ShieldIcon size={13} className="ml-auto text-slate" />
+      </div>
+
+      {/* animated body */}
+      <div className="relative h-56 overflow-hidden bg-paper p-4">
+        {tab === 0 && (
+          <div className="flex h-full items-stretch gap-3">
+            <div className="p0-doc relative w-[92px] shrink-0 overflow-hidden border border-cloud bg-paper p-2 shadow-[0_2px_6px_rgba(26,26,26,0.06)]">
+              <div className="mb-2 flex items-center gap-1 border-b border-cloud pb-1.5">
+                <File01Icon size={11} className="text-graphite" />
+                <span className="truncate text-[8px] font-medium text-graphite">COREN.pdf</span>
+              </div>
+              <div className="space-y-1">
+                <span className="block h-1 w-full bg-cloud" />
+                <span className="block h-1 w-4/5 bg-cloud" />
+                <span className="block h-1 w-full bg-cloud" />
+                <span className="block h-1 w-2/3 bg-cloud" />
+              </div>
+              <div className="mt-2 flex items-center gap-1.5">
+                <span className="grid h-6 w-6 shrink-0 place-items-center border border-cloud bg-pass-wash">
+                  <ShieldIcon size={11} className="text-pass" />
+                </span>
+                <div className="space-y-0.5">
+                  <span className="block h-1 w-9 bg-cloud" />
+                  <span className="block h-1 w-6 bg-cloud" />
+                </div>
+              </div>
+              <span className="p0-scan pointer-events-none absolute inset-x-0 top-0 h-8 bg-[linear-gradient(180deg,rgba(55,182,105,0.40),transparent)]" />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col justify-center">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-slate">Extracted fields</span>
+                <span className="p0-meter bg-pass-wash px-1.5 py-0.5 text-[10px] font-bold text-pass">98% match</span>
+              </div>
+              <div className="space-y-1.5">
+                {FIELDS.map(([k, v]) => (
+                  <div key={k} className="p0-field flex items-center justify-between gap-2 border-b border-cloud pb-1.5">
+                    <span className="truncate text-[10px] text-slate">{k}</span>
+                    <span className="flex items-center gap-1 truncate text-[10px] font-medium text-ink">
+                      {v}
+                      <CheckmarkSquare01Icon size={10} className="shrink-0 text-pass" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === 1 && (
+          <div className="flex h-full flex-col">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-slate">Compliance checks</span>
+              <span className="text-[10px] font-bold text-pass">6 / 6</span>
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-[3px]">
+              {RULES.map((r) => (
+                <div key={r} className="p1-rule flex items-center gap-2 bg-pass-wash px-2 py-[3px]">
+                  <span className="p1-tick grid h-4 w-4 shrink-0 place-items-center bg-pass text-paper">
+                    <CheckmarkSquare01Icon size={10} />
+                  </span>
+                  <span className="text-[10px] text-ink">{r}</span>
+                </div>
+              ))}
+            </div>
+            <span className="p1-verdict mt-1.5 flex w-fit items-center gap-1.5 bg-pass px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-paper">
+              <ShieldIcon size={12} /> Pass · clearance-ready
+            </span>
+          </div>
+        )}
+
+        {tab === 2 && (
+          <div className="flex h-full flex-col justify-center gap-3">
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="text-[9px] font-semibold uppercase tracking-[0.08em] text-slate">Insurance certificate</div>
+                <div className="mt-0.5 text-[10px] text-graphite">Expires 30 Jul 2026</div>
+              </div>
+              <div className="text-right leading-none">
+                <span className="p2-days font-display text-[32px] font-bold text-ink">90</span>
+                <span className="ml-1 text-[10px] text-slate">days</span>
+              </div>
+            </div>
+            <div>
+              <div className="h-1.5 w-full bg-cloud">
+                <span className="p2-bar block h-full w-full bg-warn" />
+              </div>
+              <div className="mt-1 flex justify-between text-[9px] text-slate">
+                <span>90</span><span>60</span><span>30</span>
+              </div>
+            </div>
+            <div className="p2-alert flex items-center gap-2 border border-cloud bg-warn-wash px-2.5 py-2">
+              <span className="grid h-6 w-6 shrink-0 place-items-center bg-warn text-paper">
+                <Notification01Icon size={12} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] font-semibold text-ink">Renewal alert sent</div>
+                <div className="truncate text-[9px] text-slate">Email delivered to project team</div>
+              </div>
+              <span className="text-[9px] text-slate">now</span>
+            </div>
+          </div>
+        )}
+
+        {tab === 3 && (
+          <div className="flex h-full items-center gap-4">
+            <div className="relative h-28 w-28 shrink-0">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="p3-doc absolute top-2 flex h-24 w-16 flex-col border border-cloud bg-paper p-1.5 shadow-[0_2px_6px_rgba(26,26,26,0.06)]"
+                  style={{ left: `${i * 10}px` }}
+                >
+                  <div className="mb-1 flex items-center gap-1 border-b border-cloud pb-1">
+                    <span className="h-1.5 w-1.5 bg-pass" />
+                    <span className="block h-1 w-6 bg-cloud" />
+                  </div>
+                  <span className="mb-0.5 block h-1 w-full bg-cloud" />
+                  <span className="mb-0.5 block h-1 w-4/5 bg-cloud" />
+                  <span className="block h-1 w-full bg-cloud" />
+                </div>
+              ))}
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-slate">Audit package</span>
+              <div className="flex items-baseline gap-1">
+                <span className="p3-count font-display text-[28px] font-bold text-ink">0</span>
+                <span className="text-[10px] text-slate">/ 12 verified</span>
+              </div>
+              <div className="h-1.5 w-full bg-cloud"><span className="block h-full w-full bg-pass" /></div>
+              <span className="p3-ready mt-1 flex w-fit items-center gap-1.5 bg-pass px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-paper">
+                <CheckmarkBadge01Icon size={12} /> Ready for handover
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* footer status */}
+      <div className="flex items-center justify-between border-t border-cloud bg-mist px-4 py-3">
+        <span className="text-sm font-medium text-ink">{card.name}</span>
+        <span className="tp-status text-sm font-semibold text-pass">{card.match}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const [menu, setMenu] = useState(false);
   const [tab, setTab] = useState(0);
@@ -374,20 +606,7 @@ export default function LandingPage() {
               ))}
             </ul>
           </div>
-          <div className="rounded-none border border-cloud bg-paper p-5">
-            <div className="flex items-center gap-1.5 pb-3">
-              <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
-              <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
-              <span className="h-2.5 w-2.5 rounded-pill bg-cloud" />
-            </div>
-            <div className="grid h-32 place-items-center rounded-none border border-dashed border-cloud bg-mist text-sm text-slate">
-              {active.card.meta}
-            </div>
-            <div className="mt-4 flex items-center justify-between rounded-none bg-mist px-4 py-3">
-              <span className="text-sm font-medium text-ink">{active.card.name}</span>
-              <span className="text-sm font-semibold text-pass">{active.card.match}</span>
-            </div>
-          </div>
+          <TabPreview tab={tab} card={active.card} />
         </div>
       </section>
 
