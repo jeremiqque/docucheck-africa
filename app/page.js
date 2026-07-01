@@ -676,22 +676,32 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section data-animate className="bg-gold">
-        <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-8 px-5 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+      <section data-animate className="relative isolate overflow-hidden bg-[#0c0a06]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{ background: "radial-gradient(90% 130% at 22% 6%, rgba(232,160,32,0.60) 0%, rgba(232,160,32,0.18) 27%, rgba(20,14,4,0) 58%)" }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{ background: "radial-gradient(120% 130% at 55% 125%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 60%)" }}
+        />
+        <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-8 px-5 py-20 lg:flex-row lg:items-center lg:justify-between lg:px-10">
           <div className="max-w-[620px]">
-            <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-ink">
+            <h2 className="font-display text-[32px] font-bold leading-tight tracking-tight text-paper">
               Stop chasing certificates. Start trusting the verdict.
             </h2>
-            <p className="mt-4 text-base text-ink/80">
+            <p className="mt-4 text-base text-paper/75">
               Join construction teams across Africa verifying documents automatically, ahead of every inspection.
             </p>
-            <p className="mt-3 text-sm font-medium text-ink/70">Free to try. No credit card needed.</p>
+            <p className="mt-3 text-sm font-medium text-paper/60">Free to try. No credit card needed.</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/login" className="inline-flex items-center justify-center group gap-2 rounded-none bg-[linear-gradient(90deg,#1a1a1a_0%,#7e7e7e_100%)] ring-1 ring-[#525252]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15)] px-6 py-3 text-base font-medium text-paper transition-[filter] hover:brightness-110">
+            <Link href="/login" className="group inline-flex items-center justify-center gap-2 rounded-none bg-paper px-6 py-3 text-base font-medium text-ink shadow-[0_8px_30px_rgba(0,0,0,0.28)] transition-colors hover:bg-white">
               Verify a document free <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
             </Link>
-            <a href="mailto:support@jeremiahalalade.me" className="inline-flex items-center justify-center rounded-none border border-ink px-6 py-3 text-base font-medium text-ink transition-colors hover:bg-gold-deep">
+            <a href="mailto:support@jeremiahalalade.me" className="inline-flex items-center justify-center rounded-none border border-paper/40 px-6 py-3 text-base font-medium text-paper transition-colors hover:bg-paper/10">
               Book a demo
             </a>
           </div>
