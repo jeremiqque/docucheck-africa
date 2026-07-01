@@ -10,7 +10,7 @@ import {
   CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon, Notification01Icon, FolderLibraryIcon, UserIcon,
   DocumentValidationIcon, DistributionIcon, File02Icon, ShieldIcon,
   CheckmarkSquare01Icon,
-  HardHatIcon,
+  HardHatIcon, ShovelIcon,
 } from "@/app/_components/icons";
 
 const HERO_PHRASES = ["Catch it first.", "Fix it before inspection.", "Know before you build.", "Verify in seconds."];
@@ -715,7 +715,7 @@ export default function LandingPage() {
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
             <img src="/landing/blob-2.svg" alt="COREN" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
             <img src="/landing/blob-4.svg" alt="Nigeria" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
-            <img src="/landing/logo-3d.webp" alt="DocuCheck Africa" loading="lazy" decoding="async" className="mx-2 h-48 w-auto object-contain sm:h-72 lg:h-96" />
+            <FooterLogo />
             <img src="/landing/blob-6.svg" alt="NHBRC" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
             <img src="/landing/blob-7.svg" alt="Ghana" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
             <img src="/landing/blob-5.svg" alt="South Africa" loading="lazy" decoding="async" className="h-12 w-auto object-contain" />
@@ -802,9 +802,63 @@ function CursorFollower() {
 
   return (
     <div ref={ref} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[100]" style={{ willChange: "transform", opacity: on ? 1 : 0 }}>
-      <span className="block transition-transform duration-150 ease-out [transform:translate(-50%,-50%)_scale(var(--cs,1))]">
-        <HardHatIcon size={28} className="text-ink drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" />
+      <span className="block transition-transform duration-100 ease-out [transform:translate(-12%,-6%)_scale(var(--cs,1))]">
+        <ShovelIcon size={20} className="text-ink drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]" />
       </span>
+    </div>
+  );
+}
+
+function FooterLogo() {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const floatTl = gsap.to(el, { y: -10, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    const rotX = gsap.quickTo(el, "rotationX", { duration: 0.4, ease: "power3" });
+    const rotY = gsap.quickTo(el, "rotationY", { duration: 0.4, ease: "power3" });
+    const clamp = gsap.utils.clamp(-1, 1);
+
+    const move = (e) => {
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+      const py = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+      rotY(clamp(px) * 15);
+      rotX(clamp(py) * -15);
+    };
+    const enter = () => gsap.to(el, { scale: 1.06, duration: 0.35, ease: "back.out(2)" });
+    const leave = () => { rotX(0); rotY(0); gsap.to(el, { scale: 1, duration: 0.5, ease: "power3.out" }); };
+    const down = () => gsap.to(el, { scale: 0.97, duration: 0.12 });
+    const up = () => gsap.to(el, { scale: 1.06, duration: 0.22, ease: "back.out(2.4)" });
+
+    el.addEventListener("mousemove", move);
+    el.addEventListener("mouseenter", enter);
+    el.addEventListener("mouseleave", leave);
+    el.addEventListener("mousedown", down);
+    el.addEventListener("mouseup", up);
+    return () => {
+      floatTl.kill();
+      el.removeEventListener("mousemove", move);
+      el.removeEventListener("mouseenter", enter);
+      el.removeEventListener("mouseleave", leave);
+      el.removeEventListener("mousedown", down);
+      el.removeEventListener("mouseup", up);
+    };
+  }, []);
+
+  return (
+    <div className="mx-2 [perspective:900px]">
+      <img
+        ref={ref}
+        src="/landing/logo-3d.webp"
+        alt="DocuCheck Africa"
+        loading="lazy"
+        decoding="async"
+        className="h-48 w-auto cursor-pointer object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-[filter] duration-300 will-change-transform [transform-style:preserve-3d] hover:drop-shadow-[0_26px_60px_rgba(0,0,0,0.22)] sm:h-72 lg:h-96"
+      />
     </div>
   );
 }
