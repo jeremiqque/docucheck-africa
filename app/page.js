@@ -10,7 +10,7 @@ import {
   CloudUploadIcon, Search01Icon, Settings02Icon, CheckmarkBadge01Icon, Notification01Icon, FolderLibraryIcon, UserIcon,
   DocumentValidationIcon, DistributionIcon, File02Icon, ShieldIcon,
   CheckmarkSquare01Icon,
-  HardHatIcon, ShovelIcon,
+  ShovelIcon,
 } from "@/app/_components/icons";
 
 const HERO_PHRASES = ["Catch it first.", "Fix it before inspection.", "Know before you build.", "Verify in seconds."];
